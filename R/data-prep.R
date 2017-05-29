@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Saturday, 27 May 2017
 ## Synopsis: Pull down data and transform into table.
-## Time-stamp: <2017-05-29 20:01:32 (steve)>
+## Time-stamp: <2017-05-29 21:36:28 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
@@ -39,16 +39,20 @@ scores <- scores %>%
 
 ## Now in long format for ease of manipulation
 scoresHome <- scores %>%
-    select(-contains("away"), -num_range("homeQ", 1:4)) %>%
+    select(-contains("away"), -num_range("homeQ", 1:4), awayScore) %>%
     rename(`Team Name` = `Home team`,
+           scoreFor = homeScore,
+           scoreAgainst = awayScore,
            Win = homeWin,
            Draw = homeDraw,
            Loss = homeLoss,
            Points = homePoints
            )
 scoresAway <- scores %>%
-    select(-contains("home"), -num_range("awayQ", 1:4)) %>%
+    select(-contains("home"), -num_range("awayQ", 1:4), homeScore) %>%
     rename(`Team Name` = `Away team`,
+           scoreFor = awayScore,
+           scoreAgainst = homeScore,
            Win = awayWin,
            Draw = awayDraw,
            Loss = awayLoss,
@@ -57,14 +61,12 @@ scoresAway <- scores %>%
 scoresLong <- bind_rows(scoresHome, scoresAway) %>%
     group_by(`Team Name`) %>% arrange(`Round Number`) %>%
     mutate(`Cumulative Points` = cumsum(Points),
-           For = cumsum(homeScore),
-           Against = cumsum(awayScore),
-           Percentage = For / Against
+           For = cumsum(scoreFor),
+           Against = cumsum(scoreAgainst),
+           Percentage = For / Against * 100
            )
 
-
-scoresLong %>% group_by(`Team Name`) %>%
-    arrange(`Round Number`) %>%
-    mutate(cumPoints = cumsum(Points)) %>%
-    select(`Team Name`, Points, cumPoints) %>%
-    print.data.frame()
+## Show ladder after home and away season (works!)
+scoresLong %>% filter(`Round Number` == max(`Round Number`)) %>%
+    select(`Team Name`, `Cumulative Points`, For, Against, Percentage) %>%
+    arrange(desc(`Cumulative Points`), desc(Percentage))
