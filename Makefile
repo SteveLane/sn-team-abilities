@@ -1,4 +1,4 @@
-# Time-stamp: <2017-05-31 19:30:36 (steve)>
+# Time-stamp: <2017-06-07 08:03:37 (slane)>
 .PHONY: data
 
 DATA= data/sn-ladder.json data/sn-scores-teams.json
@@ -7,7 +7,11 @@ data: $(DATA)
 
 ################################################################################
 # Grab and process data
-$(DATA): R/data-prep.R
+data/sn-scores.rds: R/grab-data.R
+	cd $(<D); \
+	Rscript --no-save --no-restore $(<F)
+
+$(DATA): R/data-prep.R data/sn-scores.rds
 	cd $(<D); \
 	Rscript --no-save --no-restore $(<F)
 

@@ -4,40 +4,12 @@
 ## Author: Steve Lane
 ## Date: Saturday, 27 May 2017
 ## Synopsis: Pull down data and transform into table.
-## Time-stamp: <2017-05-31 19:25:12 (steve)>
+## Time-stamp: <2017-06-07 08:02:37 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
-library(googlesheets)
 library(jsonlite)
-snGS <-
-    "https://docs.google.com/spreadsheets/d/18-JY8Bbg1GOY7XecDkKpEDGuM_KF62GWz4YAq3i3oFM/pubhtml"
-## Grab sheet and read in
-scores <- snGS %>% gs_url() %>% gs_read() %>% select(-Timestamp)
-
-## Total score
-scores <- scores %>%
-    mutate(
-        homeScore = homeQ1 + homeQ2 + homeQ3 + homeQ4,
-        awayScore = awayQ1 + awayQ2 + awayQ3 + awayQ4
-    )
-
-## Points per game
-scores <- scores %>%
-    mutate(
-        homeWin = ifelse(homeScore > awayScore, 1, 0),
-        awayWin = ifelse(homeScore < awayScore, 1, 0),
-        homeDraw = ifelse(homeScore == awayScore, 1, 0),
-        awayDraw = ifelse(homeScore == awayScore, 1, 0),
-        homeLoss = ifelse(homeScore < awayScore, 1, 0),
-        awayLoss = ifelse(homeScore > awayScore, 1, 0),
-        homePoints = case_when(
-            .$homeScore > .$awayScore ~ 2,
-            .$homeScore < .$awayScore ~ 0,
-            .$homeScore == .$awayScore ~ 1),
-        awayPoints = 2 - homePoints
-    )
-
+scores <- readRDS("../data/sn-scores.rds")
 ## Now in long format for ease of manipulation
 scoresHome <- scores %>%
     select(-contains("away"), -num_range("homeQ", 1:4), awayScore) %>%
@@ -68,7 +40,6 @@ scoresLong <- bind_rows(scoresHome, scoresAway) %>%
            )
 ## Save as JSON for use in web? Try anyway...
 scoresLongJSON <- toJSON(scoresLong, pretty = TRUE)
-if(!dir.exists("../data/")) dir.create("../data/")
 write(scoresLongJSON, "../data/sn-ladder.json")
 
 ## So, scores long shows the ladder/points/perc/abilities per round
