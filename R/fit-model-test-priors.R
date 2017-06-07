@@ -4,14 +4,16 @@
 ## Author: Steve Lane
 ## Date: Wednesday, 07 June 2017
 ## Synopsis: Fit the super-netball abilities models
-## Time-stamp: <2017-06-07 16:45:26 (slane)>
+## Time-stamp: <2017-06-07 17:05:36 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
 library(rstan)
-source("../R/data-prep.R")
+library(jsonlite)
 scores <- readRDS("../data/sn-scores.rds")
 tmNames <- readRDS("../data/team-lookups.rds")
+## Read scores in long format, as it has a rolling ladder we can compare to.
+scoresLong <- fromJSON("../data/sn-ladder.json")
 ################################################################################
 ################################################################################
 

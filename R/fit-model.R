@@ -4,25 +4,16 @@
 ## Author: Steve Lane
 ## Date: Wednesday, 07 June 2017
 ## Synopsis: Fit the super-netball abilities models
-## Time-stamp: <2017-06-07 08:05:10 (slane)>
+## Time-stamp: <2017-06-07 17:05:10 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
 library(rstan)
+library(jsonlite)
 scores <- readRDS("../data/sn-scores.rds")
-
-## FIX FROM HERE
-
-teams <- readRDS("../data/team-lookups.rds")
-## Restrict to the 2016 season to begin with, then use that as priors (somehow)
-## for the 2017 season.
-scores2016 <- scores %>%
-    filter(date >= as.Date("2016-01-01"),
-           date < as.Date("2017-01-01")) %>%
-    mutate(scoreDiff = homeScore - awayScore)
-rounds <- data_frame(round = unique(scores2016$round),
-                     roundInt = seq_len(length(unique(scores2016$round))))
-scores2016 <- left_join(scores2016, rounds)
+tmNames <- readRDS("../data/team-lookups.rds")
+## Read scores in long format, as it has a rolling ladder we can compare to.
+scoresLong <- fromJSON("../data/sn-ladder.json")
 ################################################################################
 ################################################################################
 
@@ -34,23 +25,29 @@ scores2016 <- left_join(scores2016, rounds)
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 model <- stan_model("../stan/basic-model.stan")
-stanData <- with(scores2016,
-                 list(nteams = max(homeInt), ngames = nrow(scores2016),
-                      nrounds = max(roundInt), roundNo = roundInt,
-                      home = homeInt, away = awayInt, scoreDiff = scoreDiff))
+stanData <- with(scores,
+                 list(nteams = max(homeInt), ngames = nrow(scores),
+                      nrounds = max(`Round Number`), roundNo = `Round Number`,
+                      home = homeInt, away = awayInt, scoreDiff = homeDiff))
 modOutput <- sampling(model, data = stanData, iter = 500)
 a <- extract(modOutput, pars = "a")$a
-## Check ability after round 23 (before finals)
-aSum <- t(apply(a[, 23, ], 2, quantile, probs = c(0.25, 0.5, 0.75))) %>%
+## Check ability after round 14 (last home and away)
+aSum <- t(apply(a[, 14, ], 2, quantile, probs = c(0.25, 0.5, 0.75))) %>%
     as_data_frame() %>% bind_cols(., teams) %>%
     arrange(desc(`50%`))
-## That looks pretty reasonable...
+## That looks pretty reasonable. How does it compare to the ladder?
+scoresLong %>% filter(`Round Number` == max(`Round Number`)) %>%
+    select(`Team Name`, `Cumulative Points`, For, Against, Percentage) %>%
+    arrange(desc(`Cumulative Points`), desc(Percentage))
+## Wow! That's a bit different!
 ## What about some of the parameters?
 print(modOutput, digits = 2, pars = c("hga", "tau_a", "nu", "sigma_y"))
 print(modOutput, digits = 2, pars = c("sigma_a"))
-## Seems fine as well...
+## Nice!
 ################################################################################
 ################################################################################
+
+## FROM HERE IS WHERE I NEED TO LOOP OVER ROUNDS.
 
 ################################################################################
 ################################################################################
