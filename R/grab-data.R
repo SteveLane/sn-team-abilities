@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Wednesday, 07 June 2017
 ## Synopsis: Grab the super netball games data (stored in googlesheets).
-## Time-stamp: <2017-06-07 08:02:14 (slane)>
+## Time-stamp: <2017-06-07 14:34:13 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
@@ -24,6 +24,7 @@ scores <- scores %>%
 ## Points per game
 scores <- scores %>%
     mutate(
+        homeDiff = homeScore - awayScore,
         homeWin = ifelse(homeScore > awayScore, 1, 0),
         awayWin = ifelse(homeScore < awayScore, 1, 0),
         homeDraw = ifelse(homeScore == awayScore, 1, 0),
@@ -36,7 +37,13 @@ scores <- scores %>%
             .$homeScore == .$awayScore ~ 1),
         awayPoints = 2 - homePoints
     )
+tm <- sort(unique(scores$`Home team`))
+tmHome <- data_frame(`Home team` = tm, homeInt = seq_len(length(tm)))
+tmAway <- data_frame(`Away team` = tm, awayInt = seq_len(length(tm)))
+scores <- left_join(scores, tmHome) %>%
+    left_join(., tmAway)
 if(!dir.exists("../data/")) dir.create("../data/")
 saveRDS(scores, "../data/sn-scores.rds")
+saveRDS(tmHome, "../data/team-lookups.rds")
 ################################################################################
 ################################################################################
