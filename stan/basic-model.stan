@@ -4,7 +4,7 @@
 // Author: Steve Lane
 // Date: Wednesday, 07 June 2017
 // Synopsis: Fits a basic difference of abilities model to super netball scores.
-// Time-stamp: <2017-06-07 07:55:50 (slane)>
+// Time-stamp: <2017-06-07 16:52:09 (slane)>
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +69,7 @@ model{
   sigma_y ~ normal(0,10);
   hga ~ normal(0,5);
   sigma_a_raw ~ normal(0,1);
-  tau_a ~ cauchy(0,2.5);
+  tau_a ~ cauchy(0,5);
   to_vector(eta_a) ~ normal(0,1);
   // Likelihood
   for (g in 1:ngames) {
