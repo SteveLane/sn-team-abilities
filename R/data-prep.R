@@ -4,11 +4,12 @@
 ## Author: Steve Lane
 ## Date: Saturday, 27 May 2017
 ## Synopsis: Pull down data and transform into table.
-## Time-stamp: <2017-06-07 08:02:37 (slane)>
+## Time-stamp: <2017-06-16 20:00:37 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
 library(jsonlite)
+library(purrr)
 scores <- readRDS("../data/sn-scores.rds")
 ## Now in long format for ease of manipulation
 scoresHome <- scores %>%
@@ -52,9 +53,26 @@ scoresByTeams <- lapply(teams, function(tm){
     data
 })
 names(scoresByTeams) <- teams
-## Save as JSON for use in web? Try anyway...
 scoresByTeamsJSON <- toJSON(scoresByTeams, pretty = TRUE)
 write(scoresByTeamsJSON, "../data/sn-scores-teams.json")
+
+## It'll actually be easier to have a list of lists; A list of teams, containing
+## a list of game results.
+allGames <- lapply(scoresByTeams, function(x){
+    games <- x %>% split(.$`Round Number`) %>%
+        purrr::map(function(y){
+            home <- y %>% select(Team = `Home team`,
+                                 contains("homeQ"), Score = homeScore)
+            names(home) <- gsub("home", "", names(home))
+            away <- y %>% select(Team = `Away team`,
+                                 contains("awayQ"), Score = awayScore)
+            names(away) <- gsub("away", "", names(away))
+            bind_rows(home, away)
+        })
+    games
+})
+allGamesJSON <- toJSON(allGames, pretty = TRUE)
+write(allGamesJSON, "../data/sn-games.json")
 
 ## Show ladder after home and away season (works!)
 ## scoresLong %>% filter(`Round Number` == max(`Round Number`)) %>%
