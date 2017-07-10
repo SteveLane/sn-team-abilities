@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Wednesday, 07 June 2017
 ## Synopsis: Fit the super-netball abilities models
-## Time-stamp: <2017-07-10 20:37:00 (slane)>
+## Time-stamp: <2017-07-10 20:42:40 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
@@ -28,7 +28,7 @@ allRounds <- lapply(1:14, function(rn){
     fits <- fitToN(scores, model, rn, tmNames)
     fits
 })
-predDiffs <- lapply(allRounds, function(x) x$PredDiffs) %>%
+predDiffs <- lapply(allRounds, function(x) x$predDiffs) %>%
     bind_rows()
 abilities <- lapply(allRounds, function(x) x$abilities) %>%
     bind_rows()
