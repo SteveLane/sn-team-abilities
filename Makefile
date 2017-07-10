@@ -1,9 +1,13 @@
-# Time-stamp: <2017-07-10 19:04:54 (slane)>
+# Time-stamp: <2017-07-10 20:37:23 (slane)>
 .PHONY: data
 
 DATA= data/sn-ladder.json data/sn-scores-teams.json
 
 data: $(DATA)
+
+OUTPUTS= data/predDiffs.rds data/abilities.rds
+
+outputs: $(OUTPUTS)
 
 ################################################################################
 # Grab and process data
@@ -14,6 +18,13 @@ data/sn-scores.rds: R/grab-data.R
 $(DATA): .data.im
 	@
 .data.im: R/data-prep.R data/sn-scores.rds
+	cd $(<D); \
+	Rscript --no-save --no-restore $(<F)
+
+$(OUTPUTS): .outputs.im
+	@
+.outputs.im: R/fit-model.R R/functions.R \
+	data/sn-scores.rds data/team-lookups.rds
 	cd $(<D); \
 	Rscript --no-save --no-restore $(<F)
 
@@ -35,4 +46,4 @@ clobber: clean-data clean-manuscripts
 
 ################################################################################
 # intermediates
-.INTERMEDIATES: .data.im
+.INTERMEDIATES: .data.im .outputs.im
