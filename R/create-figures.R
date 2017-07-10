@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Monday, 10 July 2017
 ## Synopsis: Create figures from predicted models
-## Time-stamp: <2017-07-10 21:43:09 (slane)>
+## Time-stamp: <2017-07-11 07:25:07 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
@@ -13,7 +13,7 @@ predDiffs <- readRDS("../data/predDiffs.rds")
 abilities <- readRDS("../data/abilities.rds")
 tmNames <- readRDS("../data/team-lookups.rds")
 source("../R/ggsteve.R")
-theme_set(theme_steve())
+theme_set(theme_steve(base_size = 20))
 ################################################################################
 ################################################################################
 
@@ -68,19 +68,16 @@ ggsave("../graphics/score-diff-vixens.png", plDiffs, width = 16, height = 9)
 ## Begin Section: Plot posterior predicted score diffs (all teams)
 ################################################################################
 ################################################################################
-colours <- data_frame(
-    `Team Name` = tmNames$`Home team`,
-    cols = c("#D4337C", "#F17A30", "black", vixPink, "#EB312E", "#5E366E",
-               sclOrange, "#05AE5F"))
-predDiffs <- left_join(predDiffs, colours)
+colours <- c("#D4337C", "#F17A30", "#000000", vixPink, "#EB312E", "#5E366E",
+             sclOrange, "#05AE5F")
 plAllDiffs <- ggplot(predDiffs,
                      aes(x = `Round Number`, y = actualDiff)) +
-    geom_ribbon(aes(ymin = `25%`, ymax = `75%`, fill = cols,
+    geom_ribbon(aes(ymin = `25%`, ymax = `75%`, fill = `Team Name`,
                     alpha = 0.15)) +
     geom_point() +
-    geom_line(aes(y = `50%`, colour = cols)) +
-    scale_colour_hue(guide = "none") +
-    scale_fill_hue(guide = "none") +
+    geom_line(aes(y = `50%`, colour = `Team Name`)) +
+    scale_colour_manual(guide = "none", values = colours) +
+    scale_fill_manual(guide = "none", values = colours) +
     scale_alpha(guide = "none") +
     xlab("Round number") +
     ylab("Score difference") +
