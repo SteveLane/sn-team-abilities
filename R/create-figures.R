@@ -4,13 +4,14 @@
 ## Author: Steve Lane
 ## Date: Monday, 10 July 2017
 ## Synopsis: Create figures from predicted models
-## Time-stamp: <2017-07-10 21:34:52 (slane)>
+## Time-stamp: <2017-07-10 21:43:09 (slane)>
 ################################################################################
 ################################################################################
 library(dplyr)
 library(ggplot2)
 predDiffs <- readRDS("../data/predDiffs.rds")
 abilities <- readRDS("../data/abilities.rds")
+tmNames <- readRDS("../data/team-lookups.rds")
 source("../R/ggsteve.R")
 theme_set(theme_steve())
 ################################################################################
