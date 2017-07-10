@@ -1,13 +1,16 @@
-# Time-stamp: <2017-07-10 20:37:23 (slane)>
-.PHONY: data
+# Time-stamp: <2017-07-10 21:39:39 (slane)>
+.PHONY: data outputs figures
 
 DATA= data/sn-ladder.json data/sn-scores-teams.json
-
 data: $(DATA)
 
 OUTPUTS= data/predDiffs.rds data/abilities.rds
-
 outputs: $(OUTPUTS)
+
+FIGURES= graphics/abilities-vixens-lightning.png \
+	graphics/score-diff-vixens.png \
+	graphics/score-diff-all.png
+figures: $(FIGURES)
 
 ################################################################################
 # Grab and process data
@@ -25,6 +28,12 @@ $(OUTPUTS): .outputs.im
 	@
 .outputs.im: R/fit-model.R R/functions.R \
 	data/sn-scores.rds data/team-lookups.rds
+	cd $(<D); \
+	Rscript --no-save --no-restore $(<F)
+
+$(FIGURES): .figures.im
+	@
+.figures.im: R/create-figures.R R/ggsteve.R $(OUTPUTS)
 	cd $(<D); \
 	Rscript --no-save --no-restore $(<F)
 
@@ -46,4 +55,4 @@ clobber: clean-data clean-manuscripts
 
 ################################################################################
 # intermediates
-.INTERMEDIATES: .data.im .outputs.im
+.INTERMEDIATES: .data.im .outputs.im .figures.im
