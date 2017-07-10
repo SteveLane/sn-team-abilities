@@ -1,4 +1,4 @@
-# Time-stamp: <2017-06-07 08:03:37 (slane)>
+# Time-stamp: <2017-07-10 19:04:54 (slane)>
 .PHONY: data
 
 DATA= data/sn-ladder.json data/sn-scores-teams.json
@@ -11,7 +11,9 @@ data/sn-scores.rds: R/grab-data.R
 	cd $(<D); \
 	Rscript --no-save --no-restore $(<F)
 
-$(DATA): R/data-prep.R data/sn-scores.rds
+$(DATA): .data.im
+	@
+.data.im: R/data-prep.R data/sn-scores.rds
 	cd $(<D); \
 	Rscript --no-save --no-restore $(<F)
 
@@ -30,3 +32,7 @@ clean-manuscripts:
 clobber: clean-data clean-manuscripts
 	cd manuscripts/; \
 	rm -rf auto/ cache/ figure/
+
+################################################################################
+# intermediates
+.INTERMEDIATES: .data.im
