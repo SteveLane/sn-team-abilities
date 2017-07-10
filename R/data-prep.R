@@ -4,12 +4,12 @@
 ## Author: Steve Lane
 ## Date: Saturday, 27 May 2017
 ## Synopsis: Pull down data and transform into table.
-## Time-stamp: <2017-06-16 20:00:37 (slane)>
+## Time-stamp: <2017-07-10 19:06:40 (slane)>
 ################################################################################
 ################################################################################
+library(purrr)
 library(dplyr)
 library(jsonlite)
-library(purrr)
 scores <- readRDS("../data/sn-scores.rds")
 ## Now in long format for ease of manipulation
 scoresHome <- scores %>%
