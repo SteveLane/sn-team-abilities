@@ -2,89 +2,87 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Title: Basic Model
 // Author: Steve Lane
-// Date: Wednesday, 07 June 2017
+// Date: Monday, 16 April 2017
 // Synopsis: Fits a basic difference of abilities model to super netball scores.
-// Time-stamp: <2017-06-07 16:52:09 (slane)>
+// Time-stamp: <2018-04-16 22:06:46 (slane)>
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-data{
-  // Data to be supplied to sampler
+data {
   /* Number of teams */
   int<lower=1> nteams;
-  /* Number of games */
+  /* Number of games (over the season to date) */
   int<lower=1> ngames;
-  /* Number of rounds */
+  /* Number of rounds (to date) */
   int<lower=1> nrounds;
   /* Round number of game */
-  int<lower=1> roundNo[ngames];
+  int<lower=1> round_no[ngames];
   /* Home team ID */
   int<lower=1,upper=nteams> home[ngames];
   /* Away team ID */
   int<lower=1,upper=nteams> away[ngames];
   /* Score difference */
-  vector[ngames] scoreDiff;
+  real score_diff[ngames];
+  /* Ability at start of the season */
+  row_vector[nteams] init_ability;
+  /* Standard deviation of start of season ability */
+  row_vector<lower=0>[nteams] init_sd;
 }
 
-parameters{
-  // Parameters for the model
+parameters {
   /* Home ground advantage (mean) */
-  real hga;
-  /* Initial team variation */
-  real<lower=0> sigma_a0;
-  /* Scaling parameter for variation */
-  real<lower=0> tau_a;
+  real hga[nteams];
+  /* Team specific initial abilities */
+  row_vector[nteams] a_init;
+  /* Team specific dynamic model */
+  matrix[nrounds - 1, nteams] eta_raw;
+  /* Standard deviation of team effect */
+  row_vector<lower=0>[nteams] sigma_eta;
   /* Degrees of freedom */
   real<lower=1> nu;
   /* Std. dev. for score difference */
   real<lower=0> sigma_y;
-  /* Variation in team abilities across a season (raw) */
-  row_vector<lower=0>[nteams] sigma_a_raw;
-  /* Random variation around week-to-week variability */
-  matrix[nrounds,nteams] eta_a;
 }
 
-transformed parameters{
-  /* Team abilities */
+transformed parameters {
+  /* Smoothed team abilities */
   matrix[nrounds, nteams] a;
-  /* Variation in team abilities across a season */
-  row_vector<lower=0>[nteams] sigma_a;
-  /* Abilities before season */
-  a[1] = sigma_a0 * eta_a[1];
-  /* Adjusted variation */
-  sigma_a = tau_a * sigma_a_raw;
+  /* Mean score differential */
+  real mean_score_diff[ngames];
+  /* Abilities at start of season */
+  a[1] = init_ability + init_sd .* a_init;
   /* Round by round team ability evolution */
   for (r in 2:nrounds) {
-    a[r] = a[r-1] + sigma_a .* eta_a[r];
+    a[r] = a[r - 1] + sigma_eta .* eta_raw[r - 1];
+  }
+  /* Game by game mean score diff */
+  for (g in 1:ngames) {
+    mean_score_diff[g] = a[round_no[g], home[g]] - a[round_no[g], away[g]] + hga[home[g]];
   }
 }
 
 model{
-  // Model sampling statements
-  /* Difference in abilities */
-  vector[ngames] a_diff;
-  // Priors
-  nu ~ gamma(2,0.1);
-  sigma_a0 ~ normal(0,10);
-  sigma_y ~ normal(0,10);
-  hga ~ normal(0,5);
-  sigma_a_raw ~ normal(0,1);
-  tau_a ~ cauchy(0,5);
-  to_vector(eta_a) ~ normal(0,1);
+  /* Prior for initial ability */
+  a_init ~ normal(0, 1);
+  /* Priors for team trends */
+  to_vector(eta_raw) ~ normal(0, 1);
+  sigma_eta ~ cauchy(0, 2.5);
+  /* Prior for home ground advantage */
+  hga ~ normal(0, 5);
   // Likelihood
-  for (g in 1:ngames) {
-    a_diff[g] = a[roundNo[g],home[g]] - a[roundNo[g],away[g]];
-  }
-  scoreDiff ~ student_t(nu, a_diff + hga, sigma_y);
+  /* Prior for degrees of freedom */
+  nu ~ gamma(2, 0.1);
+  /* Prior for standard deviation */
+  sigma_y ~ cauchy(0, 2.5);
+  score_diff ~ student_t(nu, mean_score_diff, sigma_y);
 }
 
 generated quantities{
   // Statements for predictive outputs, e.g. new data
-  vector[ngames] scoreDiffRep;
+  vector[ngames] score_diffRep;
   vector[ngames] errorRep;
   for (g in 1:ngames){
-    scoreDiffRep[g] = student_t_rng(nu, a[roundNo[g],home[g]] - 
-				    a[roundNo[g],away[g]] + hga, sigma_y);
-    errorRep[g] = (scoreDiff[g] - scoreDiffRep[g])^2;
+    score_diffRep[g] = student_t_rng(nu, mean_score_diff[g], sigma_y);
+    errorRep[g] = (score_diff[g] - score_diffRep[g])^2;
   }
 }
