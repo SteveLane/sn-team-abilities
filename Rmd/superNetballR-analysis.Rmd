@@ -4,7 +4,7 @@ author:
 - Stephen E. Lane
 ---
 
-<!-- Time-stamp: <2018-04-16 22:05:02 (slane)> -->
+<!-- Time-stamp: <2018-04-17 19:48:38 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -92,7 +92,8 @@ stan_data <- with(
                      nrounds = max(round), round_no = round, home = homeInt,
                      away = awayInt, score_diff = score_diff,
                      init_ability = rep(0, max(homeInt)),
-                     init_sd = rep(1, max(homeInt))))
+                     init_sd = rep(1, max(homeInt)), ngames_pred = 1,
+                     pred_home = array(4, 1), pred_away = array(5, 1)))
 
 ```
 
@@ -108,9 +109,12 @@ output <- sampling(
     control = list(adapt_delta = 0.9,
                    max_treedepth = 10)
 )
-print(output, digits = 1, pars = c("hga", paste0("a[15,", 1:8, "]")))
+print(output, digits = 1, pars = c("hga", paste0("a[14,", 1:8, "]")))
+print(output, digits = 1, pars = c("pred_ability", "pred_diff", "prob_home"))
 
 ```
+
+And there we go, that looks like it works... maybe...
 
 <p>
   <br><br><br>
