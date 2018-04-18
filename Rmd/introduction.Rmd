@@ -1,0 +1,167 @@
+---
+title: "superNetballR Analysis"
+description: "A model for predicting super netball results"
+date: "2018-04-18"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-04-18 21:07:56 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = TRUE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16, cache.path = "intro_cache/",
+                      fig.path = "img/intro-2018/")
+options(digits = 2)
+
+```
+
+I recently put together a [package](https://stevelane.github.io/superNetballR/) for getting a hold of super netball data. It now comes time to start using it!
+
+I'm going to start off with a possibly naive, simplistic model, but we all have to start somewhere. I may tinker around with the model over the season, but will always report on when I make changes.
+
+To estimate team *abilities*, I'm going to model the score differential of each game (I'll use the home team's score minus the away team's score for this). To predict the score differential in each game, I'll use an estimate of each teams ability, and a home ground advantage.
+
+To estimate each team's ability, I'm going to use a random walk model, where the ability for the current game depends on the ability in the previous game plus a disturbance term. Mathematically, it'll look like this for team \\(j\\), round \\(r\\):
+
+$$
+\begin{align\*}
+a\_{j,r} & = a\_{j, r-1} + \delta\_{r}
+\end{align\*}
+$$
+
+To model the score differential, I'll use a regression model with a \\(t\\) distribution as the outcome distribution:
+
+$$
+\begin{align\*}
+d\_{r,ij} & \sim t\_{\nu}(\beta_{i} + a\_{i,r} - a\_{j,r}, \sigma\_{d})
+\end{align\*}
+$$
+
+where \\(d\_{r,ij}\\) is the score differential between teams \\(i\\) and \\(j\\) in the \\(r\\)th round, and \\(\beta\_{i}\\) is the home ground advantage of team \\(i\\).
+
+This has already got complex enough, but I set it all up in a Bayesian framework, using the excellent [Stan](http://mc-stan.org/). You can find the model code and other bits and bobs [here](https://github.com/SteveLane/sn-team-abilities/blob/master/stan/basic-model.stan).
+
+This document provides notes on setting up my super netball score prediction model using my new `superNetballR` package.
+
+The following packages are required:
+
+```{r libraries}
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(superNetballR)
+library(rstan)
+library(parallel)
+library(here)
+rstan::rstan_options(auto_write = TRUE)
+cores <- round(parallel::detectCores() - 2)
+options(mc.cores = cores)
+
+```
+
+We load the model and data:
+
+```{r load-model-data}
+model <- stan_model(here("stan", "basic-model.stan"))
+data(season_2017)
+
+```
+
+Now, we need to transform the data into a suitable format for our model. We can use the `superNetballR::matchResults` function for this:
+
+```{r data-munging}
+model_data <- season_2017 %>%
+    matchResults() %>%
+    select(-goals, -squadId, -squadNickname, -squadCode, -points)
+
+```
+
+Next, we need to be able to have the home team, away team, and score difference on a single row for stan:
+
+```{r data-munging-stan}
+spreadGame <- function(df) {
+    home <- df %>%
+        filter(isHome == 1) %>%
+        rename(homeTeam = squadName) %>%
+        select(-isHome)
+    away <- df %>%
+        filter(isHome == 0) %>%
+        rename(awayTeam = squadName) %>%
+        select(awayTeam)
+    df <- bind_cols(home, away)
+    df
+}
+model_data <- model_data %>%
+    group_by(round, game) %>%
+    nest() %>%
+    group_by(round, game) %>%
+    mutate(game_results = map(data, spreadGame)) %>%
+    select(-data) %>%
+    unnest()
+
+```
+
+Now a lookup table for teams, as that's required for stan as well:
+
+```{r lookup-table}
+teamLookup <- data_frame(
+    squadName = sort(unique(model_data$homeTeam)),
+    squadInt = seq_len(length(squadName))
+)
+model_data <- left_join(model_data, teamLookup,
+                        by = c("homeTeam" = "squadName")) %>%
+    rename(homeInt = squadInt) %>%
+    left_join(., teamLookup, by = c("awayTeam" = "squadName")) %>%
+    rename(awayInt = squadInt)
+stan_data <- with(
+    model_data, list(nteams = max(homeInt), ngames = nrow(model_data),
+                     nrounds = max(round), round_no = round, home = homeInt,
+                     away = awayInt, score_diff = score_diff,
+                     init_ability = rep(0, max(homeInt)),
+                     init_sd = rep(1, max(homeInt)), ngames_pred = 1,
+                     pred_home = array(4, 1), pred_away = array(5, 1)))
+
+```
+
+Now I can run it:
+
+```{r stan-model,cache=TRUE}
+output <- sampling(
+    model,
+    data = stan_data,
+    iter = 2000,
+    chains = cores,
+    open_progress = FALSE,
+    control = list(adapt_delta = 0.9,
+                   max_treedepth = 10)
+)
+print(output, digits = 1, pars = c("hga", paste0("a[14,", 1:8, "]")))
+print(output, digits = 1, pars = c("pred_ability", "pred_diff", "prob_home"))
+
+```
+
+And there we go, that looks like it works... maybe...
+
+Test plot:
+
+```{r plotting}
+plot(1, 1)
+
+```
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+  jax: ["input/TeX","output/HTML-CSS"],
+  inlineMath: [['$','$'], ['\\(','\\)']],
+  displayAlign: "left",
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+  
+</script>
