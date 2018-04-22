@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Sunday, 22 April 2018
 ## Synopsis: Description
-## Time-stamp: <2018-04-22 14:07:55 (slane)>
+## Time-stamp: <2018-04-22 17:27:30 (slane)>
 ################################################################################
 ################################################################################
 ## Function have home team, away team, and score difference on a single row for
@@ -55,4 +55,36 @@ splitRound <- function(rnd) {
     rnd <- unlist(strsplit(rnd, "\\."))
     data_frame(Round = as.numeric(rnd[1]),
                squadInt = as.numeric(rnd[2]))
+}
+
+## Fit gamma function
+fitGamma <- function(df, dname) {
+    x <- df[[dname]]
+    gam <- MASS::fitdistr(x, "gamma")
+    data_frame(shape = gam$estimate[1], rate = gam$estimate[2])
+}
+
+## Functions to calculate approximate team posteriors to act as priors in new
+## seasons
+fitPosteriorTeams <- function(model, parameter, team_lookup) {
+    ests <- extract(model, parameter)[[1]] %>%
+        as_data_frame()
+    names(ests) <- teamLookup$squadName
+    ests <- ests %>%
+        gather(squadName, value) %>%
+        group_by(squadName) %>%
+        nest() %>%
+        group_by(squadName) %>%
+        mutate(ests = map(data, fitGamma, dname = "value")) %>%
+        select(-data) %>%
+        unnest()
+    ests
+}
+
+fitPosteriorSingle <- function(model, parameter) {
+    ests <- extract(model, parameter) %>%
+        as_data_frame()
+    names(ests) <- "value"
+    ests <- fitGamma(ests, dname = "value")
+    ests
 }

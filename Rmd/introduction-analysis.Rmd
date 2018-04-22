@@ -2,7 +2,7 @@
 title: Introduction Analysis
 ---
 
-<!-- Time-stamp: <2018-04-22 15:49:43 (slane)> -->
+<!-- Time-stamp: <2018-04-22 19:21:16 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -93,7 +93,8 @@ stan_data <- with(
                      init_ability = rep(0, max(homeInt)),
                      init_sd = rep(1, max(homeInt)), ngames_pred = 4,
                      pred_home = round1_2018$homeSquad,
-                     pred_away = round1_2018$awaySquad))
+                     pred_away = round1_2018$awaySquad,
+                     first_round = 0))
 
 ```
 
@@ -119,8 +120,8 @@ print(output, digits = 1, pars = c("pred_ability", "pred_diff", "prob_home"))
 Now I need to create some summaries. As a highlight, perhaps a histogram of score differences for each game, and the probability of the home team winning.
 
 ```{r histogram}
-if (!dir.exists(here("Rmd", "sn-assets", "round1-2018"))) {
-    dir.create(here("Rmd", "sn-assets", "round1-2018"), recursive = TRUE)
+if (!dir.exists(here("Rmd", "sn-assets", "intro-2018"))) {
+    dir.create(here("Rmd", "sn-assets", "intro-2018"), recursive = TRUE)
 }
 res <- sapply(1:4, predDiffHist, model = output, game_lookup = round1_2018)
 ## Save prediction table
@@ -130,12 +131,12 @@ res_table <- bind_rows(res[2, ]) %>%
         Away = awayTeam,
         `Chance of home team winning` = prob
     )
-saveRDS(res_table,
-        here("Rmd", "sn-assets", "round1-2018", "predictions.rds"))
-for (i in 1:4) {
-    ggsave(here("Rmd", "sn-assets", "round1-2018", paste0("game-", i, ".png")),
-           res[[1, i]], width = 17.5, height = 35 / (1 + sqrt(5)))
-}
+## saveRDS(res_table,
+##         here("Rmd", "sn-assets", "round1-2018", "predictions.rds"))
+## for (i in 1:4) {
+##     ggsave(here("Rmd", "sn-assets", "round1-2018", paste0("game-", i, ".png")),
+##            res[[1, i]], width = 17.5, height = 35 / (1 + sqrt(5)))
+## }
 
 ```
 
@@ -175,7 +176,7 @@ pl_abilities <- ggplot(abilities, aes(x = Round, y = med)) +
     geom_hline(aes(yintercept = 0), colour = "darkgrey") +
     facet_wrap(~ squadName, nrow = 2) +
     ylab("Ability")
-ggsave(here("Rmd", "sn-assets", "round1-2018", "abilities.png"),
+ggsave(here("Rmd", "sn-assets", "intro-2018", "abilities.png"),
        pl_abilities, width = 17.5, height = 35 / (1 + sqrt(5)))
 
 ```
@@ -207,17 +208,41 @@ pl_hga <- ggplot(hga, aes(x = fct_reorder(squadName, med),
     xlab("Squad") +
     ylab("Home ground advantage") +
     coord_flip()
-ggsave(here("Rmd", "sn-assets", "round1-2018", "hga.png"),
+ggsave(here("Rmd", "sn-assets", "intro-2018", "hga.png"),
        pl_hga, width = 17.5, height = 35 / (1 + sqrt(5)))
 
 ```
 
-## Spit out abilities for actual round one predictions...
+## Priors for Season 2018
+
+I can now figure out the priors for 2018. I'm going to put priors on the standard deviations, as well as the initial abilities.
+
+I'll need to extract them, and fit appropriate distributions to them.
 
 ```{r output-abilities}
 abilities_latest <- abilities %>%
     filter(Round == 17) %>%
-    select(squadInt, squadName, med, sigma)
+    select(squadInt, squadName, med)
+
+abilities_sd <- fitPosteriorTeams(output, "sigma_eta", teamLookup)
+hga_post <- extract(output, "hga")$hga %>%
+                                 as_data_frame()
+names(hga_post) <- teamLookup$squadName
+hga_post <- hga_post %>%
+    gather(squadName, value) %>%
+    group_by(squadName) %>%
+    summarise(value = median(value))
+
+## Singular fit ...
+hga_sd <- fitPosteriorSingle(output, "sigma_hga")
+sigma_y <- fitPosteriorSingle(output, "sigma_y")
+nu <- fitPosteriorSingle(output, "nu")
+
 saveRDS(abilities_latest, here("data", "initial_abilities_2018.rds"))
+saveRDS(abilities_sd, here("data", "initial_abilities_sd_2018.rds"))
+saveRDS(hga_post, here("data", "initial_hga_2018.rds"))
+saveRDS(hga_sd, here("data", "initial_hga_sd_2018.rds"))
+saveRDS(sigma_y, here("data", "initial_sigma_y_2018.rds"))
+saveRDS(nu, here("data", "initial_nu_2018.rds"))
 
 ```
