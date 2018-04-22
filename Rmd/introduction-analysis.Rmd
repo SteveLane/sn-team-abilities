@@ -2,14 +2,14 @@
 title: Introduction Analysis
 ---
 
-<!-- Time-stamp: <2018-04-18 21:41:56 (slane)> -->
+<!-- Time-stamp: <2018-04-22 13:27:20 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
                       message = FALSE, echo = TRUE, out.width = "900px",
                       out.height = "506px", dpi = 180, fig.align = "center",
                       fig.asp = 9/16, cache.path = "intro_cache/",
-                      fig.path = "img/intro-2018/")
+                      fig.path = "img/2018-04-17-intro/")
 options(digits = 2)
 
 ```
@@ -32,6 +32,7 @@ library(ggplot2)
 rstan::rstan_options(auto_write = TRUE)
 cores <- round(parallel::detectCores() - 2)
 options(mc.cores = cores)
+source(here("R", "fit_funs.R"))
 source(here("R", "ggsteve.R"))
 theme_set(theme_steve(base_size = 20))
 
@@ -57,18 +58,6 @@ model_data <- season_2017 %>%
 Next, we need to be able to have the home team, away team, and score difference on a single row for stan:
 
 ```{r data-munging-stan}
-spreadGame <- function(df) {
-    home <- df %>%
-        filter(isHome == 1) %>%
-        rename(homeTeam = squadName) %>%
-        select(-isHome)
-    away <- df %>%
-        filter(isHome == 0) %>%
-        rename(awayTeam = squadName) %>%
-        select(awayTeam)
-    df <- bind_cols(home, away)
-    df
-}
 model_data <- model_data %>%
     group_by(round, game) %>%
     nest() %>%
@@ -82,10 +71,7 @@ model_data <- model_data %>%
 Now a lookup table for teams, as that's required for stan as well. I also need to feed in the first match of the 2018 season for predictions.
 
 ```{r lookup-table}
-teamLookup <- data_frame(
-    squadName = sort(unique(model_data$homeTeam)),
-    squadInt = seq_len(length(squadName))
-)
+teamLookup <- readRDS(here("data", "teamLookup.rds"))
 model_data <- left_join(model_data, teamLookup,
                         by = c("homeTeam" = "squadName")) %>%
     rename(homeInt = squadInt) %>%
@@ -95,9 +81,11 @@ round1_2018 <- data_frame(
     homeSquad = c(4, 1, 2, 5),
     awaySquad = c(3, 8, 7, 6)) %>%
     left_join(., teamLookup, by = c("homeSquad" = "squadInt")) %>%
-    rename(homeTeam = squadName) %>%
+    rename(homeTeam = squadName,
+           homeColour = squadColour) %>%
     left_join(., teamLookup, by = c("awaySquad" = "squadInt")) %>%
-    rename(awayTeam = squadName)
+    rename(awayTeam = squadName,
+           awayColour = squadColour)
 stan_data <- with(
     model_data, list(nteams = max(homeInt), ngames = nrow(model_data),
                      nrounds = max(round), round_no = round, home = homeInt,
@@ -131,21 +119,22 @@ print(output, digits = 1, pars = c("pred_ability", "pred_diff", "prob_home"))
 Now I need to create some summaries. As a highlight, perhaps a histogram of score differences for each game, and the probability of the home team winning.
 
 ```{r histogram}
-predDiffHist <- function(model, round, game, game_lookup, outname) {
-    home <- toupper(game_lookup$homeTeam[game])
-    away <- toupper(game_lookup$awayTeam[game])
-    pred_diff <- extract(model, paste0("pred_diff[", game, "]"))[[1]] %>%
-        as_data_frame()
-    prob <- extract(model, paste0("prob_home[", game, "]"))[[1]]
-    prob <- round(mean(prob) * 100)
-    title_text <- paste0(home, " v.s. ", away)
-    subtitle_text <- paste0("Chance of ", home, " winning: ", prob, "%")
-    pl_diff <- ggplot(pred_diff, aes(x = value)) +
-        geom_histogram() +
-        xlab("Score differential") +
-        ylab("") +
-        ggtitle(title_text, subtitle_text)
-    ## Create an appropriate file to save ? Or just print the object?
+if (!dir.exists(here("Rmd", "sn-assets", "round1-2018"))) {
+    dir.create(here("Rmd", "sn-assets", "round1-2018"), recursive = TRUE)
+}
+res <- sapply(1:4, predDiffHist, model = output, game_lookup = round1_2018)
+## Save prediction table
+res_table <- bind_rows(res[2, ]) %>%
+    select(
+        Home = homeTeam,
+        Away = awayTeam,
+        `Chance of home team winning` = prob
+    )
+saveRDS(res_table,
+        here("Rmd", "sn-assets", "round1-2018", "predictions.rds"))
+for (i in 1:4) {
+    ggsave(here("Rmd", "sn-assets", "round1-2018", paste0("game-", i, ".png")),
+           res[[1, i]], width = 14, height = 28 / (1 + sqrt(5)))
 }
 
 ```
