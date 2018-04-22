@@ -6,7 +6,7 @@ tags: ["r", "sports analytics"]
 categories: ["blog", "Super Netball"]
 ---
 
-<!-- Time-stamp: <2018-04-18 21:07:56 (slane)> -->
+<!-- Time-stamp: <2018-04-22 15:05:19 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -18,7 +18,11 @@ options(digits = 2)
 
 ```
 
-I recently put together a [package](https://stevelane.github.io/superNetballR/) for getting a hold of super netball data. It now comes time to start using it!
+I recently put together a [package](https://stevelane.github.io/superNetballR/) for getting a hold of super netball data. It now comes time to start using it! The figure below shows the abilities (ratings) of each team at the _end of the 2017 finals_ campaign. I'll describe it soon.
+
+!["super netball score abilities"](sn-assets/round1-2018/abilities.png)
+
+## The Model
 
 I'm going to start off with a possibly naive, simplistic model, but we all have to start somewhere. I may tinker around with the model over the season, but will always report on when I make changes.
 
@@ -44,113 +48,19 @@ where \\(d\_{r,ij}\\) is the score differential between teams \\(i\\) and \\(j\\
 
 This has already got complex enough, but I set it all up in a Bayesian framework, using the excellent [Stan](http://mc-stan.org/). You can find the model code and other bits and bobs [here](https://github.com/SteveLane/sn-team-abilities/blob/master/stan/basic-model.stan).
 
-This document provides notes on setting up my super netball score prediction model using my new `superNetballR` package.
+## Team Ability and Home Ground Advantage
 
-The following packages are required:
+The figure that I included above shows all team's abilities at the _end of the 2017 finals_ campaign. What this means, is that for those teams that didn't make the finals (or were knocked out during the finals campaign), their ability is a prediction from the model at the end of the season.
 
-```{r libraries}
-library(dplyr)
-library(tidyr)
-library(purrr)
-library(superNetballR)
-library(rstan)
-library(parallel)
-library(here)
-rstan::rstan_options(auto_write = TRUE)
-cores <- round(parallel::detectCores() - 2)
-options(mc.cores = cores)
+There's no real surprises in that the Sunshine Coast Lightning finished the season with an increasing ability rating; they were the competition winners after all!
 
-```
+The abrupt fall in the Vixens ability after round 12 is due to their loss to the Giants. At this stage of the competition, the Vixens would have been highly fancied to win that game, so there is a large correction in their ability due to the unexpected loss.
 
-We load the model and data:
+The next figure shows the home ground advantage. There's no distinct home advantage for any team. It looks as though Giants may get a boost playing at home, but at best, this is a two to three goal advantage. The Firebirds are the only team with most of their predicted home ground advantage distribution lying below zero.
 
-```{r load-model-data}
-model <- stan_model(here("stan", "basic-model.stan"))
-data(season_2017)
+What is surprising is the Thunderbirds home ground advantage. For a team that finished bottom of the ladder, this would suggest that their losses may have been even more severe if it weren't for the advantage playing at home.
 
-```
-
-Now, we need to transform the data into a suitable format for our model. We can use the `superNetballR::matchResults` function for this:
-
-```{r data-munging}
-model_data <- season_2017 %>%
-    matchResults() %>%
-    select(-goals, -squadId, -squadNickname, -squadCode, -points)
-
-```
-
-Next, we need to be able to have the home team, away team, and score difference on a single row for stan:
-
-```{r data-munging-stan}
-spreadGame <- function(df) {
-    home <- df %>%
-        filter(isHome == 1) %>%
-        rename(homeTeam = squadName) %>%
-        select(-isHome)
-    away <- df %>%
-        filter(isHome == 0) %>%
-        rename(awayTeam = squadName) %>%
-        select(awayTeam)
-    df <- bind_cols(home, away)
-    df
-}
-model_data <- model_data %>%
-    group_by(round, game) %>%
-    nest() %>%
-    group_by(round, game) %>%
-    mutate(game_results = map(data, spreadGame)) %>%
-    select(-data) %>%
-    unnest()
-
-```
-
-Now a lookup table for teams, as that's required for stan as well:
-
-```{r lookup-table}
-teamLookup <- data_frame(
-    squadName = sort(unique(model_data$homeTeam)),
-    squadInt = seq_len(length(squadName))
-)
-model_data <- left_join(model_data, teamLookup,
-                        by = c("homeTeam" = "squadName")) %>%
-    rename(homeInt = squadInt) %>%
-    left_join(., teamLookup, by = c("awayTeam" = "squadName")) %>%
-    rename(awayInt = squadInt)
-stan_data <- with(
-    model_data, list(nteams = max(homeInt), ngames = nrow(model_data),
-                     nrounds = max(round), round_no = round, home = homeInt,
-                     away = awayInt, score_diff = score_diff,
-                     init_ability = rep(0, max(homeInt)),
-                     init_sd = rep(1, max(homeInt)), ngames_pred = 1,
-                     pred_home = array(4, 1), pred_away = array(5, 1)))
-
-```
-
-Now I can run it:
-
-```{r stan-model,cache=TRUE}
-output <- sampling(
-    model,
-    data = stan_data,
-    iter = 2000,
-    chains = cores,
-    open_progress = FALSE,
-    control = list(adapt_delta = 0.9,
-                   max_treedepth = 10)
-)
-print(output, digits = 1, pars = c("hga", paste0("a[14,", 1:8, "]")))
-print(output, digits = 1, pars = c("pred_ability", "pred_diff", "prob_home"))
-
-```
-
-And there we go, that looks like it works... maybe...
-
-Test plot:
-
-```{r plotting}
-plot(1, 1)
-
-```
+![home ground advantage](sn-assets/round1-2018/hga.png)
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
