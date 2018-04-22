@@ -2,13 +2,13 @@
 title: Introduction Analysis
 ---
 
-<!-- Time-stamp: <2018-04-22 13:27:20 (slane)> -->
+<!-- Time-stamp: <2018-04-22 14:54:16 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
                       message = FALSE, echo = TRUE, out.width = "900px",
                       out.height = "506px", dpi = 180, fig.align = "center",
-                      fig.asp = 9/16, cache.path = "intro_cache/",
+                      fig.asp = 9/16, cache.path = "round-1/",
                       fig.path = "img/2018-04-17-intro/")
 options(digits = 2)
 
@@ -29,6 +29,7 @@ library(rstan)
 library(parallel)
 library(here)
 library(ggplot2)
+library(forcats)
 rstan::rstan_options(auto_write = TRUE)
 cores <- round(parallel::detectCores() - 2)
 options(mc.cores = cores)
@@ -134,7 +135,79 @@ saveRDS(res_table,
         here("Rmd", "sn-assets", "round1-2018", "predictions.rds"))
 for (i in 1:4) {
     ggsave(here("Rmd", "sn-assets", "round1-2018", paste0("game-", i, ".png")),
-           res[[1, i]], width = 14, height = 28 / (1 + sqrt(5)))
+           res[[1, i]], width = 17.5, height = 35 / (1 + sqrt(5)))
 }
+
+```
+
+# Abilities at the end of 2017
+
+How do the abilities by the end of the season look?
+
+```{r abilities}
+abilities <- extract(output, "a")$a
+abilities <- as_data_frame(abilities) %>%
+    gather(game, Ability) %>%
+    group_by(game) %>%
+    summarise(
+        ll1 = quantile(Ability, 0.1),
+        ll2 = quantile(Ability, 0.25),
+        med = quantile(Ability, 0.5),
+        ul1 = quantile(Ability, 0.9),
+        ul2 = quantile(Ability, 0.75)
+    )
+ids <- t(sapply(abilities$game, splitRound)) %>%
+    as_data_frame() %>%
+    unnest()
+abilities <- bind_cols(ids, abilities) %>%
+    left_join(., teamLookup, by = "squadInt")
+sq_cols <- teamLookup$squadColour
+names(sq_cols) <- teamLookup$squadName
+pl_abilities <- ggplot(abilities, aes(x = Round, y = med)) +
+    geom_ribbon(aes(ymin = ll1, ymax = ul1, fill = squadName,
+                    alpha = 0.05)) +
+    geom_ribbon(aes(ymin = ll2, ymax = ul2, fill = squadName,
+                    alpha = 0.05)) +
+    scale_fill_manual(values = sq_cols, guide = "none") +
+    scale_alpha(guide = "none") +
+    geom_line(aes(colour = squadName), lwd = 2) +
+    scale_colour_manual(values = sq_cols, guide = "none") +
+    geom_hline(aes(yintercept = 0), colour = "darkgrey") +
+    facet_wrap(~ squadName, nrow = 2) +
+    ylab("Ability")
+ggsave(here("Rmd", "sn-assets", "round1-2018", "abilities.png"),
+       pl_abilities, width = 17.5, height = 35 / (1 + sqrt(5)))
+
+```
+
+How do the home ground advantages look?
+
+```{r hga-pred}
+hga <- extract(output, "hga")$hga
+hga <- as_data_frame(hga)
+names(hga) <- teamLookup$squadName
+hga <- hga %>%
+    gather(squadName, hga) %>%
+    group_by(squadName) %>%
+    summarise(
+        ll1 = quantile(hga, 0.1),
+        ll2 = quantile(hga, 0.25),
+        med = quantile(hga, 0.5),
+        ul1 = quantile(hga, 0.9),
+        ul2 = quantile(hga, 0.75)
+    )
+pl_hga <- ggplot(hga, aes(x = fct_reorder(squadName, med),
+                          colour = squadName)) +
+    geom_linerange(aes(ymin = ll1, ymax = ul1, alpha = 0.05), lwd = 2) +
+    geom_linerange(aes(ymin = ll2, ymax = ul2, alpha = 0.05), lwd = 2.5) +
+    geom_point(aes(y = med), size = 4, fill = "white", shape = 21) +
+    geom_hline(aes(yintercept = 0), colour = "darkgrey") +
+    scale_colour_manual(values = sq_cols, guide = "none") +
+    scale_alpha(guide = "none") +
+    xlab("Squad") +
+    ylab("Home ground advantage") +
+    coord_flip()
+ggsave(here("Rmd", "sn-assets", "round1-2018", "hga.png"),
+       pl_hga, width = 17.5, height = 35 / (1 + sqrt(5)))
 
 ```
