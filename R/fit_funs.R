@@ -4,9 +4,23 @@
 ## Author: Steve Lane
 ## Date: Sunday, 22 April 2018
 ## Synopsis: Description
-## Time-stamp: <2018-04-22 13:20:41 (slane)>
+## Time-stamp: <2018-04-22 13:27:06 (slane)>
 ################################################################################
 ################################################################################
+## Function have home team, away team, and score difference on a single row for
+## stan modelling.
+spreadGame <- function(df) {
+    home <- df %>%
+        filter(isHome == 1) %>%
+        rename(homeTeam = squadName) %>%
+        select(-isHome)
+    away <- df %>%
+        filter(isHome == 0) %>%
+        rename(awayTeam = squadName) %>%
+        select(awayTeam)
+    df <- bind_cols(home, away)
+    df
+}
 
 ## Function takes stan output and produces a histogram and results table
 predDiffHist <- function(game, model, game_lookup) {
