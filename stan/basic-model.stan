@@ -4,7 +4,7 @@
 // Author: Steve Lane
 // Date: Monday, 16 April 2017
 // Synopsis: Fits a basic difference of abilities model to super netball scores.
-// Time-stamp: <2018-04-17 19:31:44 (slane)>
+// Time-stamp: <2018-04-22 16:02:50 (slane)>
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +34,8 @@ data {
   int<lower=1,upper=nteams> pred_home[ngames_pred];
   /* Away teams for prediction */
   int<lower=1,upper=nteams> pred_away[ngames_pred];
+  /* Flag for first round */
+  int<lower=0,upper=1> first_round;
 }
 
 parameters {
@@ -88,7 +90,10 @@ model{
   nu ~ gamma(2, 0.1);
   /* Prior for standard deviation */
   sigma_y ~ cauchy(0, 2.5);
-  score_diff ~ student_t(nu, mean_score_diff, sigma_y);
+  /* Only run if not first round */
+  if (first_round == 0) {
+    score_diff ~ student_t(nu, mean_score_diff, sigma_y);
+  }
 }
 
 generated quantities{
