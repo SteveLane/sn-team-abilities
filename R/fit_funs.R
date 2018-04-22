@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Sunday, 22 April 2018
 ## Synopsis: Description
-## Time-stamp: <2018-04-22 13:27:06 (slane)>
+## Time-stamp: <2018-04-22 14:07:55 (slane)>
 ################################################################################
 ################################################################################
 ## Function have home team, away team, and score difference on a single row for
@@ -48,4 +48,11 @@ predDiffHist <- function(game, model, game_lookup) {
         slice(game) %>%
         mutate(prob = paste0(prob, "%"))
     list(plot = pl_diff, results = df)
+}
+
+## Function to split up round/game names
+splitRound <- function(rnd) {
+    rnd <- unlist(strsplit(rnd, "\\."))
+    data_frame(Round = as.numeric(rnd[1]),
+               squadInt = as.numeric(rnd[2]))
 }
