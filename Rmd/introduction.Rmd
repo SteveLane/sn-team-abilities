@@ -6,7 +6,7 @@ tags: ["r", "sports analytics"]
 categories: ["blog", "Super Netball"]
 ---
 
-<!-- Time-stamp: <2018-04-22 15:05:19 (slane)> -->
+<!-- Time-stamp: <2018-04-22 15:12:03 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -61,6 +61,12 @@ The next figure shows the home ground advantage. There's no distinct home advant
 What is surprising is the Thunderbirds home ground advantage. For a team that finished bottom of the ladder, this would suggest that their losses may have been even more severe if it weren't for the advantage playing at home.
 
 ![home ground advantage](sn-assets/round1-2018/hga.png)
+
+## Moving Forward
+
+I'll try and update predictions for the 2018 season before the games, with some possible summaries for how teams abilities are tracking.
+
+To keep updated, follow me on [twitter](https://twitter.com/stephenelane), and also this blog --- look for the [Super Netball](/super-netball/) category.
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>

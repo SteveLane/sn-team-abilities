@@ -2,7 +2,7 @@
 title: Introduction Analysis
 ---
 
-<!-- Time-stamp: <2018-04-22 14:54:16 (slane)> -->
+<!-- Time-stamp: <2018-04-22 15:14:18 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -35,7 +35,7 @@ cores <- round(parallel::detectCores() - 2)
 options(mc.cores = cores)
 source(here("R", "fit_funs.R"))
 source(here("R", "ggsteve.R"))
-theme_set(theme_steve(base_size = 20))
+theme_set(theme_steve(base_size = 24))
 
 ```
 
