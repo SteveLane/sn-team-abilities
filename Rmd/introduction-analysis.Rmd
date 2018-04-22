@@ -2,14 +2,13 @@
 title: Introduction Analysis
 ---
 
-<!-- Time-stamp: <2018-04-22 15:14:18 (slane)> -->
+<!-- Time-stamp: <2018-04-22 15:49:43 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
                       message = FALSE, echo = TRUE, out.width = "900px",
                       out.height = "506px", dpi = 180, fig.align = "center",
-                      fig.asp = 9/16, cache.path = "round-1/",
-                      fig.path = "img/2018-04-17-intro/")
+                      fig.asp = 9/16, cache.path = "introduction_cache/")
 options(digits = 2)
 
 ```
@@ -154,7 +153,8 @@ abilities <- as_data_frame(abilities) %>%
         ll2 = quantile(Ability, 0.25),
         med = quantile(Ability, 0.5),
         ul1 = quantile(Ability, 0.9),
-        ul2 = quantile(Ability, 0.75)
+        ul2 = quantile(Ability, 0.75),
+        sigma = sd(Ability)
     )
 ids <- t(sapply(abilities$game, splitRound)) %>%
     as_data_frame() %>%
@@ -209,5 +209,15 @@ pl_hga <- ggplot(hga, aes(x = fct_reorder(squadName, med),
     coord_flip()
 ggsave(here("Rmd", "sn-assets", "round1-2018", "hga.png"),
        pl_hga, width = 17.5, height = 35 / (1 + sqrt(5)))
+
+```
+
+## Spit out abilities for actual round one predictions...
+
+```{r output-abilities}
+abilities_latest <- abilities %>%
+    filter(Round == 17) %>%
+    select(squadInt, squadName, med, sigma)
+saveRDS(abilities_latest, here("data", "initial_abilities_2018.rds"))
 
 ```
