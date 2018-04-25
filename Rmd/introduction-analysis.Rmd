@@ -2,7 +2,7 @@
 title: Introduction Analysis
 ---
 
-<!-- Time-stamp: <2018-04-22 19:21:16 (slane)> -->
+<!-- Time-stamp: <2018-04-25 19:13:49 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -106,6 +106,7 @@ output <- sampling(
     data = stan_data,
     iter = 2000,
     chains = cores,
+    thin = 5,
     open_progress = FALSE,
     control = list(adapt_delta = 0.9,
                    max_treedepth = 10)
@@ -222,7 +223,7 @@ I'll need to extract them, and fit appropriate distributions to them.
 ```{r output-abilities}
 abilities_latest <- abilities %>%
     filter(Round == 17) %>%
-    select(squadInt, squadName, med)
+    select(squadInt, squadName, med, sigma)
 
 abilities_sd <- fitPosteriorTeams(output, "sigma_eta", teamLookup)
 hga_post <- extract(output, "hga")$hga %>%

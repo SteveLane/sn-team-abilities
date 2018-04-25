@@ -3,7 +3,7 @@ title: "Round 1, 2018"
 subtitle: "Predictions"
 ---
 
-<!-- Time-stamp: <2018-04-22 19:25:30 (slane)> -->
+<!-- Time-stamp: <2018-04-25 19:22:43 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -44,15 +44,23 @@ We load the model and data:
 ```{r load-model-data}
 model <- stan_model(here("stan", "season_2018.stan"))
 shrink_model <- stan_model(here("stan", "shrink_abilities.stan"))
+abilities_latest <- readRDS(here("data", "initial_abilities_2018.rds"))
+abilities_sd <- readRDS(here("data", "initial_abilities_sd_2018.rds"))
+hga_post <- readRDS(here("data", "initial_hga_2018.rds"))
+hga_sd <- readRDS(here("data", "initial_hga_sd_2018.rds"))
+sigma_y <- readRDS(here("data", "initial_sigma_y_2018.rds"))
+nu <- readRDS(here("data", "initial_nu_2018.rds"))
 
 ```
 
 Now, let's shrink the 2017 abilities:
 
-```{r shrink-ability}
-stan_shrink <- with(abilities,
-                    list(nteams = nrow(abilities), ability = med,
-                         ability_sd = sigma))
+```{r shrink-ability,cache=TRUE}
+abilities_sd <- abilities_sd %>%
+    mutate(mean = shape / rate)
+stan_shrink <- with(abilities_latest,
+                    list(nteams = nrow(abilities_latest), ability = med,
+                         ability_sd = abilities_sd$mean))
 shrink <- sampling(
     shrink_model,
     data = stan_shrink,
@@ -62,22 +70,9 @@ shrink <- sampling(
     control = list(adapt_delta = 0.95,
                    max_treedepth = 10)
 )
+
 new_ability <- extract(shrink, "theta")$theta
 new_ability <- apply(new_ability, 2, median)
-new_sigma <- c(extract(shrink, "tau")$tau)
-new_sigma <- median(new_sigma, 2, median)
-
-```
-
-We now bring in the data for the priors:
-
-```{r bring-in}
-abilities_latest <- readRDS(here("data", "initial_abilities_2018.rds"))
-abilities_sd <- readRDS(here("data", "initial_abilities_sd_2018.rds"))
-hga_post <- readRDS(here("data", "initial_hga_2018.rds"))
-hga_sd <- readRDS(here("data", "initial_hga_sd_2018.rds"))
-sigma_y <- readRDS(here("data", "initial_sigma_y_2018.rds"))
-nu <- readRDS(here("data", "initial_nu_2018.rds"))
 
 ```
 
@@ -99,7 +94,8 @@ model_data <- model_data %>%
     group_by(round, game) %>%
     mutate(game_results = map(data, spreadGame)) %>%
     select(-data) %>%
-    unnest()
+    unnest() %>%
+    filter(round == 1)
 
 ```
 
@@ -122,15 +118,14 @@ round1_2018 <- data_frame(
     rename(awayTeam = squadName,
            awayColour = squadColour)
 stan_data <- with(
-    model_data, list(nteams = max(homeInt), ngames = nrow(model_data),
+    model_data, list(nteams = 8, ngames = nrow(model_data),
                      nrounds = max(round), round_no = round, home = homeInt,
                      away = awayInt, score_diff = score_diff,
-                     init_ability = abilities_latest$med,
+                     init_ability = new_ability,
                      init_sd = cbind(abilities_sd[,2], abilities_sd[,3]),
                      mu_hga = hga_post$value,
                      init_sigma_hga = as.numeric(hga_sd),
                      init_sigma_y = as.numeric(sigma_y),
-                     init_nu = as.numeric(nu),
                      ngames_pred = 4,
                      pred_home = round1_2018$homeSquad,
                      pred_away = round1_2018$awaySquad,
@@ -146,11 +141,12 @@ output <- sampling(
     data = stan_data,
     iter = 2000,
     chains = cores,
+    thin = 5,
     open_progress = FALSE,
     control = list(adapt_delta = 0.9,
                    max_treedepth = 10)
 )
-print(output, digits = 1, pars = c("hga", paste0("a[14,", 1:8, "]")))
+print(output, digits = 1, pars = c("hga", paste0("a[1,", 1:8, "]")))
 print(output, digits = 1, pars = c("pred_ability", "pred_diff", "prob_home"))
 
 ```
