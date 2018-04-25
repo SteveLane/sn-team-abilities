@@ -5,7 +5,7 @@
 // Date: Sunday, 22 April 2018
 // Synopsis: Fits a basic difference of abilities model to super netball scores.
 // Uses the basic model as a base, and priors derived from season 2017.
-// Time-stamp: <2018-04-22 17:44:10 (slane)>
+// Time-stamp: <2018-04-25 19:19:02 (slane)>
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -36,8 +36,6 @@ data {
   real<lower=0> init_sigma_hga[2];
   /* Standard deviation of score differences (Gamma prior) */
   real<lower=0> init_sigma_y[2];
-  /* Initial degrees of freedom (Gamma prior) */
-  real<lower=0> init_nu[2];
   /* Predictions for next round */
   /* Number of games to predict */
   int<lower=0> ngames_pred;
@@ -58,8 +56,6 @@ parameters {
   matrix[nrounds - 1, nteams] eta_raw;
   /* Standard deviation of team effect */
   row_vector<lower=0>[nteams] sigma_eta;
-  /* Degrees of freedom */
-  real<lower=1> nu;
   /* Std. dev. for score difference */
   real<lower=0> sigma_y;
 }
@@ -99,13 +95,11 @@ model{
   hga_raw ~ normal(0, 1);
   sigma_hga ~ gamma(init_sigma_hga[1], init_sigma_hga[2]);
   // Likelihood
-  /* Prior for degrees of freedom */
-  nu ~ gamma(init_nu[1], init_nu[2]);
   /* Prior for standard deviation */
   sigma_y ~ gamma(init_sigma_y[1], init_sigma_y[2]);
   /* Only run if not first round */
   if (first_round == 0) {
-    score_diff ~ student_t(nu, mean_score_diff, sigma_y);
+    score_diff ~ normal(mean_score_diff, sigma_y);
   }
 }
 
@@ -119,7 +113,7 @@ generated quantities{
   vector[ngames_pred] prob_home;
   /* PPCs */
   for (g in 1:ngames){
-    score_diffRep[g] = student_t_rng(nu, mean_score_diff[g], sigma_y);
+    score_diffRep[g] = normal_rng(mean_score_diff[g], sigma_y);
     errorRep[g] = (score_diff[g] - score_diffRep[g])^2;
   }
 
@@ -133,7 +127,7 @@ generated quantities{
   /* Predicted difference in scores (and prob of home team winning) */
   for (g in 1:ngames_pred) {
     real mean_diff = pred_ability[pred_home[g]] - pred_ability[pred_away[g]] + hga[pred_home[g]];
-    pred_diff[g] = student_t_rng(nu, mean_diff, sigma_y);
+    pred_diff[g] = normal_rng(mean_diff, sigma_y);
     prob_home[g] = (pred_diff[g] > 0) ? 1 : 0;
   }
 }
