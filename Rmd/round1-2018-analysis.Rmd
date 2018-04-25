@@ -3,7 +3,7 @@ title: "Round 1, 2018"
 subtitle: "Predictions"
 ---
 
-<!-- Time-stamp: <2018-04-25 19:22:43 (slane)> -->
+<!-- Time-stamp: <2018-04-25 19:42:27 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -29,6 +29,7 @@ library(rstan)
 library(parallel)
 library(here)
 library(ggplot2)
+library(cowplot)
 library(forcats)
 rstan::rstan_options(auto_write = TRUE)
 cores <- round(parallel::detectCores() - 2)
@@ -160,6 +161,10 @@ if (!dir.exists(here("Rmd", "sn-assets", "round1-2018"))) {
     dir.create(here("Rmd", "sn-assets", "round1-2018"), recursive = TRUE)
 }
 res <- sapply(1:4, predDiffHist, model = output, game_lookup = round1_2018)
+## Create a 2x2 grid of the figures.
+pl_grid <- plot_grid(res[[1, 1]], res[[1, 2]], res[[1, 3]], res[[1, 4]])
+save_plot(here("figs", "round1-2018-plot-grid.png"),
+          pl_grid, base_height = 70 / (1 + sqrt(5)), base_width = 35)
 ## Save prediction table
 res_table <- bind_rows(res[2, ]) %>%
     select(
