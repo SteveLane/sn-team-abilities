@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Sunday, 22 April 2018
 ## Synopsis: Description
-## Time-stamp: <2018-04-22 17:27:30 (slane)>
+## Time-stamp: <2018-04-25 19:05:09 (slane)>
 ################################################################################
 ################################################################################
 ## Function have home team, away team, and score difference on a single row for
@@ -28,6 +28,9 @@ predDiffHist <- function(game, model, game_lookup) {
     away <- toupper(game_lookup$awayTeam[game])
     pred_diff <- extract(model, paste0("pred_diff[", game, "]"))[[1]]
     dens <- density(pred_diff)
+    ## Add 50% interval
+    ll <- quantile(pred_diff, 0.25)
+    ul <- quantile(pred_diff, 0.75)
     pred_df <- data_frame(score_diff = dens$x, y = dens$y) %>%
         mutate(prob_win = ifelse(score_diff > 0, home, away))
     col_list = c(game_lookup$homeColour[game],
@@ -41,6 +44,8 @@ predDiffHist <- function(game, model, game_lookup) {
         geom_line() +
         geom_ribbon(aes(ymin = 0, ymax = y, fill = prob_win)) +
         scale_fill_manual(values = col_list, name = NULL) +
+        geom_vline(xintercept = ll, lty = 2, colour = "green") +
+        geom_vline(xintercept = ul, lty = 2, colour = "green") +
         xlab("Score differential") +
         ylab("") +
         ggtitle(title_text, subtitle_text)
