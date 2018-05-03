@@ -1,12 +1,12 @@
 ---
-title: "Round 1, 2018: Wrap-up"
-description: "Super Netball Predictions"
-date: "2018-05-03"
+title: "Round 1, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-05-02"
 tags: ["r", "sports analytics"]
 categories: ["blog", "Super Netball"]
 ---
 
-<!-- Time-stamp: <2018-05-03 10:18:57 (slane)> -->
+<!-- Time-stamp: <2018-05-03 20:55:31 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -40,4 +40,4 @@ The Lightning was likewise firm favourites, given their winning form last season
 
 And another close one to close out the round. Firebirds were hot favourites in this one, even though they finished only one ladder position above the Swifts. In terms of team ability at the end of last season, they were well ahead though. The points go to the Swifts though!
 
-So, overall, my model is not quite as well calibrated as one would hope. Let's see what happens for my [Round 2]() predictions; I may need to tweak my model somewhat!
+So, overall, my model is not quite as well calibrated as one would hope. Let's see what happens for my [Round 2]({{< relref "2018-05-03-round2.md" >}}) predictions; I may need to tweak my model somewhat!
