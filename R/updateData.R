@@ -11,6 +11,9 @@ updateData <- function(round) {
     if (round != 1) {
         season_2018 <- readRDS(here("data-raw", "season_2018.rds"))
         players_2018 <- readRDS(here("data-raw", "players_2018.rds"))
+        if (max(season_2018[['round']]) == round) {
+            return(season_2018)
+        }
     }
     for (i in seq_len(4)) {
         data <- downloadMatch("10393", round, i)
