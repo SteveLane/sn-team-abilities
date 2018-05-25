@@ -1,0 +1,55 @@
+---
+title: "Round 4, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-05-24"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-05-25 20:16:33 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+No commentary this week, I've had an ordinary one...
+
+If you missed my round 4 predictions, [here they are]({{< relref "2018-05-16-round4.md" >}}).
+
+## Wrap-up
+
+```{r prediction-table}
+preds <- readRDS(here("Rmd", "sn-assets", "round5-2018", "results_match.rds"))
+knitr::kable(preds)
+
+```
+
+<!-- Is the model now hitting its stride? It gave the Vixens a 36% chance of winning, and unfortunately they went down to the Firebirds, who are looking quite strong. -->
+
+<!-- The Fever were very slight favourites (56%) away from home, and they got the job done against the Lightning who rely do have a premiership hangover. -->
+
+<!-- The Magpies were strong favourites (80%) against the Thunderbirds, and the result was a true thrashing. 20 goals the difference, poor ol' Thunderbirds, looks like another year of dwelling in the cellar. -->
+
+<!-- The final game of the round saw the Swifts beat the Giants. The Giants were hotly fancied by the model (79%), but in a close game, the Swifts got the job done. -->
+
+## Team Abilities
+
+Now that there's a few rounds down, let's check out how the model views the team ability:
+
+!["team-abilities"](sn-assets/round5-2018/abilities.png)
+
+It's a good reality check that the Vixens estimated ability does not change; they played a team (Thunderbirds) they were expected to beat by a large margin. Thus, the Vixens ability should not change.
+
+I wrote briefly about these abilities last round. See [here]({{< relref "2018-05-16-round3-wrapup.md" >}}) for details.
+
+Check out the round 5 predictions [here]({{< relref "2018-05-25-round5.md" >}}).
