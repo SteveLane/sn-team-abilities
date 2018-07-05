@@ -1,0 +1,43 @@
+---
+title: "Round 9, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-07-04"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-07-05 21:00:22 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+Go the Vixens! Another great win, and shooting up the ladder into third. Magpies carried in a strong home ground advantage according to the model, but could get it done against the Fever, who keep clear at the top of the ladder. No surprises that the poor ol Thunderbirds copped a hiding again.
+
+## Wrap-up
+
+If you missed my round 9 predictions, [here they are]({{< relref "2018-06-29-round9.md" >}}).
+
+```{r prediction-table}
+preds <- readRDS(here("Rmd", "sn-assets", "round10-2018", "results_match.rds"))
+knitr::kable(preds)
+
+```
+
+## Team Abilities
+
+The Fever's ability (via the model) keeps dropping, and they keep winning! Clearly my model just can't handle the Fever! After an uptick after round 8, the Thunderbirds have dropped back down in ability once again.
+
+!["team-abilities"](sn-assets/round10-2018/abilities.png)
+
+Check out the round 10 predictions [here]({{< relref "2018-07-05-round10.md" >}}).

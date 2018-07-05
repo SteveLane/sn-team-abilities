@@ -1,0 +1,43 @@
+---
+title: "Round 8, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-06-28"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-07-05 20:40:33 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+Starting in to the second half of the season...
+
+## Wrap-up
+
+If you missed my round 8 predictions, [here they are]({{< relref "2018-06-22-round8.md" >}}).
+
+```{r prediction-table}
+preds <- readRDS(here("Rmd", "sn-assets", "round9-2018", "results_match.rds"))
+knitr::kable(preds)
+
+```
+
+## Team Abilities
+
+After round 8 we look like this:
+
+!["team-abilities"](sn-assets/round9-2018/abilities.png)
+
+Check out the round 9 predictions [here]({{< relref "2018-06-29-round9.md" >}}).
