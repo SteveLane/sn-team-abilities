@@ -6,7 +6,7 @@ tags: ["r", "sports analytics"]
 categories: ["blog", "Super Netball"]
 ---
 
-<!-- Time-stamp: <2018-07-05 20:53:10 (slane)> -->
+<!-- Time-stamp: <2018-07-14 16:57:04 (slane)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -21,6 +21,8 @@ options(digits = 2)
 library(here)
 
 ```
+
+**UPDATE: 2018-07-14:** I had an incorrect reference in my data setup for this round, so the predictions have changed. You can check out the history on github.
 
 Here are my model predictions for round 10! You can check out my wrap-up of round 9 [here]({{< relref "2018-07-04-round9-wrapup.md" >}}). Here's a summary of what [my model]({{< relref "2018-04-22-introduction.md" >}}) is predicting as the outcomes of the matches for round 10:
 
