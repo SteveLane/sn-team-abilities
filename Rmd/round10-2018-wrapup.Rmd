@@ -1,0 +1,53 @@
+---
+title: "Round 10, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-07-11"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-07-14 18:02:55 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+Once again another close one for the Vixens---to win away from home was a great achievement. Over in the West, the Fever just scraped in; a loss would have seen them topple from first on the ladder. Both the Magpies and Giants had expected wins.
+
+## Wrap-up
+
+If you missed my round 10 predictions, [here they are]({{< relref "2018-07-05-round10.md" >}}).
+
+```{r prediction-table}
+preds <- readRDS(here("Rmd", "sn-assets", "round11-2018", "results_match.rds"))
+knitr::kable(preds)
+
+```
+
+## Team Abilities
+
+Ability is starting to be predicted a little more consistently; the Fever are going well, as are the Giants and the Vixens.
+
+!["team-abilities"](sn-assets/round11-2018/abilities.png)
+
+## Ladder
+
+New! I finally rewrote the ladder function in my [superNetballR](https://stevelane.github.io/superNetballR/) package. So I'll be adding in the ladder from now on as well! From below, you can see that at this stage of the season, the top four would remain the same if we were still using the old scoring system.
+
+```{r ladder}
+ladder <- readRDS(here("Rmd", "sn-assets", "round11-2018", "ladder.rds"))
+knitr::kable(ladder)
+
+```
+
+Check out the round 11 predictions [here]({{< relref "2018-07-12-round11.md" >}}).
