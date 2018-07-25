@@ -1,0 +1,51 @@
+---
+title: "Round 12, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-07-24"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-07-25 19:24:52 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+An excellent draw to start off the round this week---the poor Magpies can't seem to get the ball rolling again after their (short-lived) early season form. The model did ok with the Fever: it seems that they may be just off the boil; let's hope the Vixens can get it done away from home next match. An absolute drubbing to the Thunderbirds as expected, and extermely close one between the Giants and the Vixens. The Giants defensive pressure was outstanding, causing the Vixens to throw away a lot of ball and forced into giving away a lot of penalties.
+
+## Wrap-up
+
+If you missed my round 12 predictions, [here they are]({{< relref "2018-07-19-round12.md" >}}).
+
+```{r prediction-table}
+preds <- readRDS(here("Rmd", "sn-assets", "round13-2018", "results_match.rds"))
+knitr::kable(preds)
+
+```
+
+## Team Abilities
+
+Ability is starting to be predicted a little more consistently; the Fever are going well, as are the Giants and the Vixens.
+
+!["team-abilities"](sn-assets/round13-2018/abilities.png)
+
+## Ladder
+
+```{r ladder}
+ladder <- readRDS(here("Rmd", "sn-assets", "round13-2018", "ladder.rds"))
+knitr::kable(ladder)
+
+```
+
+Check out the round 13 predictions [here]({{< relref "2018-07-25-round13.md" >}}).
