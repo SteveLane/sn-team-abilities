@@ -52,3 +52,11 @@ Rmd/*.md.bk
 /Rmd/round12-2018_cache/stan-model_73cde4ed1a879c79fb679087e0e5f49f.rdb
 /Rmd/round12-2018_cache/stan-model_73cde4ed1a879c79fb679087e0e5f49f.rdx
 /Rmd/round13-2018_cache/__packages
+/Rmd/round13-2018_cache/stan-model_b545b04a751386ba145a3918de49a9ce.rdb
+/Rmd/round13-2018_cache/stan-model_b545b04a751386ba145a3918de49a9ce.rdx
+/Rmd/round14-2018_cache/__packages
+/Rmd/round14-2018_cache/stan-model_3e26b1067da8f21dda824859ab84755a.rdb
+/Rmd/round14-2018_cache/*
+/Rmd/round14-2018_cache/stan-model_3e26b1067da8f21dda824859ab84755a.rdx
+/Rmd/round15-2018_cache/*
+/Rmd/round15-2018_cache/__packages

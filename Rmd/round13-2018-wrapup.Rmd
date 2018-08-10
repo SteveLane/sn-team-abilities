@@ -1,0 +1,49 @@
+---
+title: "Round 13, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-08-01"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-08-10 15:53:43 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+Unfortunately no commentary this week...
+
+## Wrap-up
+
+If you missed my round 13 predictions, [here they are]({{< relref "2018-07-25-round13.md" >}}).
+
+```{r prediction-table}
+preds <- readRDS(here("Rmd", "sn-assets", "round14-2018", "results_match.rds"))
+knitr::kable(preds)
+
+```
+
+## Team Abilities
+
+!["team-abilities"](sn-assets/round14-2018/abilities.png)
+
+## Ladder
+
+```{r ladder}
+ladder <- readRDS(here("Rmd", "sn-assets", "round14-2018", "ladder.rds"))
+knitr::kable(ladder)
+
+```
+
+Check out the round 14 predictions [here]({{< relref "2018-08-02-round14.md" >}}).
