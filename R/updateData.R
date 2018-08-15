@@ -4,10 +4,12 @@
 #' data.
 #'
 #' @param round Integer. The round number to download and join.
+#' @param comp_id A string identifying which season the game is
+#'     in. \code{comp_id} is different depending on regular season or finals.
 #'
 #' @return A dataframe containing the full (to date) seasons data. As a
 #'     by-product, the function saves the data.
-updateData <- function(round) {
+updateData <- function(round, comp_id = "10393") {
     if (round != 1) {
         season_2018 <- readRDS(here("data-raw", "season_2018.rds"))
         players_2018 <- readRDS(here("data-raw", "players_2018.rds"))
@@ -16,7 +18,7 @@ updateData <- function(round) {
         }
     }
     for (i in seq_len(4)) {
-        data <- downloadMatch("10393", round, i)
+        data <- downloadMatch(comp_id, round, i)
         tidied_data <- tidyMatch(data)
         tidied_players <- tidyPlayers(data)
         if (round == 1 && i == 1) {
@@ -69,4 +71,36 @@ matchPredictions <- function(round, year, results) {
                `Away Score` = away_score,
                Winner)
     results
+}
+
+#' Updates the finals match data
+#'
+#' \code{updateData} downloads the provided round, and joins with all seasonal
+#' data.
+#'
+#' @param round Integer. The round number (in sequence as per modelling).
+#' @param comp_id A string identifying which season the game is
+#'     in. \code{comp_id} is different depending on regular season or finals.
+#' @param finals_round Integer. The round number (of the finals)
+#'
+#' @return A dataframe containing the full (to date) seasons data. As a
+#'     by-product, the function saves the data.
+updateFinals <- function(round, comp_id, finals_round) {
+    season_2018 <- readRDS(here("data-raw", "season_2018.rds"))
+    players_2018 <- readRDS(here("data-raw", "players_2018.rds"))
+    if (max(season_2018[['round']]) == round) {
+        return(season_2018)
+    }
+    for (i in seq_len(4)) {
+        data <- downloadMatch(comp_id, finals_round, i)
+        if (!is.null(data)) {
+            tidied_data <- tidyMatch(data)
+            tidied_players <- tidyPlayers(data)
+            season_2018 <- bind_rows(season_2018, tidied_data)
+            players_2018 <- bind_rows(players_2018, tidied_players)
+        }
+    }
+    saveRDS(season_2018, here("data-raw", "season_2018.rds"))
+    saveRDS(players_2018, here("data-raw", "players_2018.rds"))
+    season_2018
 }
