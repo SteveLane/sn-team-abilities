@@ -4,10 +4,12 @@
 #' data.
 #'
 #' @param round Integer. The round number to download and join.
+#' @param comp_id A string identifying which season the game is
+#'     in. \code{comp_id} is different depending on regular season or finals.
 #'
 #' @return A dataframe containing the full (to date) seasons data. As a
 #'     by-product, the function saves the data.
-updateData <- function(round) {
+updateData <- function(round, comp_id = "10393") {
     if (round != 1) {
         season_2018 <- readRDS(here("data-raw", "season_2018.rds"))
         players_2018 <- readRDS(here("data-raw", "players_2018.rds"))
@@ -16,7 +18,7 @@ updateData <- function(round) {
         }
     }
     for (i in seq_len(4)) {
-        data <- downloadMatch("10393", round, i)
+        data <- downloadMatch(comp_id, round, i)
         tidied_data <- tidyMatch(data)
         tidied_players <- tidyPlayers(data)
         if (round == 1 && i == 1) {
