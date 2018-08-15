@@ -60,3 +60,5 @@ Rmd/*.md.bk
 /Rmd/round14-2018_cache/stan-model_3e26b1067da8f21dda824859ab84755a.rdx
 /Rmd/round15-2018_cache/*
 /Rmd/round15-2018_cache/__packages
+/Rmd/round16-2018_cache/*
+/Rmd/round16-2018_cache/__packages

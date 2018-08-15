@@ -1,0 +1,293 @@
+---
+title: "Round 16, 2018"
+subtitle: "Round 15 Wrapup and Round 16 Analysis"
+---
+
+<!-- Time-stamp: <2018-08-15 20:37:48 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = TRUE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16, cache.path = "round16-2018_cache/")
+options(digits = 2)
+
+```
+
+# Introduction
+
+Going forward, these documents will wrap up the results from the previous round, and perform predictions for the next round.
+
+The following packages are required:
+
+```{r libraries}
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(superNetballR)
+library(rstan)
+library(parallel)
+library(here)
+library(ggplot2)
+library(cowplot)
+library(forcats)
+rstan::rstan_options(auto_write = TRUE)
+cores <- round(parallel::detectCores() - 2)
+options(mc.cores = cores)
+source(here("R", "fit_funs.R"))
+source(here("R", "ggsteve.R"))
+source(here("R", "updateData.R"))
+theme_set(theme_steve(base_size = 24))
+if (!dir.exists(here("Rmd", "sn-assets", "round16-2018"))) {
+    dir.create(here("Rmd", "sn-assets", "round16-2018"), recursive = TRUE)
+}
+
+```
+
+```{r set-round}
+## This is a new chunk which sets the current and previous rounds so that I
+## don't need to use a search and replace strategy.
+## Will need to adjust for the finals...
+this_round <- 16
+previous_round <- this_round - 1
+finals_round <- 1
+
+```
+
+## Round `r previous_round` Wrap-up
+
+First, let's download the round `r previous_round` data, and update the seasonal data:
+
+```{r round-download}
+season_2018 <- updateFinals(previous_round, "10394", finals_round)
+
+```
+
+Now, let's calculate the match results:
+
+```{r round-results}
+match_results <- matchResults(season_2018) %>%
+    filter(round == previous_round)
+
+```
+
+Compare the two:
+
+```{r round-games}
+results <- matchPredictions(previous_round, 2018, match_results)
+dir_text <- paste0("round", this_round, "-2018")
+saveRDS(results, here("Rmd", "sn-assets", dir_text, "results_match.rds"))
+
+```
+
+And output the ladder:
+
+```{r ladder}
+ladder <- ladders(season_2018) %>%
+    select(-games, Squad = squadName, `Goals for` = goals_for,
+           `Goals against` = goals_against, Percentage = percentage,
+           Points = points_new, `Points (old)` = points)
+saveRDS(ladder, here("Rmd", "sn-assets", dir_text, "ladder.rds"))
+
+```
+
+## Round `r this_round` Analysis
+
+We load the model and data:
+
+```{r load-model-data}
+model <- stan_model(here("stan", "season_2018.stan"))
+init_abilities <- readRDS(here("data", "shrunken_abilities_2018.rds"))
+abilities_sd <- readRDS(here("data", "initial_abilities_sd_2018.rds"))
+hga_post <- readRDS(here("data", "initial_hga_2018.rds"))
+hga_sd <- readRDS(here("data", "initial_hga_sd_2018.rds"))
+sigma_y <- readRDS(here("data", "initial_sigma_y_2018.rds"))
+
+```
+
+Now, we need to transform the data into a suitable format for our model. We can use the `superNetballR::matchResults` function for this:
+
+```{r data-munging}
+model_data <- season_2018 %>%
+    matchResults() %>%
+    select(-goals, -squadId, -squadNickname, -squadCode, -points)
+
+```
+
+Next, we need to be able to have the home team, away team, and score difference on a single row for stan:
+
+```{r data-munging-stan}
+model_data <- model_data %>%
+    group_by(round, game) %>%
+    nest() %>%
+    group_by(round, game) %>%
+    mutate(game_results = map(data, spreadGame)) %>%
+    select(-data) %>%
+    unnest() %>%
+    filter(round <= previous_round)
+
+```
+
+Now match the data to team ID's and add **Round `r this_round`** for predictions:
+
+```{r lookup-table}
+teamLookup <- readRDS(here::here("data", "teamLookup.rds"))
+model_data <- left_join(model_data, teamLookup,
+                        by = c("homeTeam" = "squadName")) %>%
+    rename(homeInt = squadInt, homeColour = squadColour) %>%
+    left_join(., teamLookup, by = c("awayTeam" = "squadName")) %>%
+    rename(awayInt = squadInt, awayColour = squadColour)
+round_data <- data_frame(
+    homeSquad = c(2),
+    awaySquad = c(7)) %>%
+    left_join(., teamLookup, by = c("homeSquad" = "squadInt")) %>%
+    rename(homeTeam = squadName,
+           homeColour = squadColour) %>%
+    left_join(., teamLookup, by = c("awaySquad" = "squadInt")) %>%
+    rename(awayTeam = squadName,
+           awayColour = squadColour)
+saveRDS(round_data, here("Rmd", "sn-assets", dir_text, "game.rds"))
+stan_data <- with(
+    model_data, list(nteams = 8, ngames = nrow(model_data),
+                     nrounds = max(round), round_no = round, home = homeInt,
+                     away = awayInt, score_diff = score_diff,
+                     init_ability = init_abilities,
+                     init_sd = cbind(abilities_sd[,2], abilities_sd[,3]),
+                     mu_hga = hga_post$value,
+                     init_sigma_hga = as.numeric(hga_sd),
+                     init_sigma_y = as.numeric(sigma_y),
+                     ngames_pred = c(1),
+                     pred_home = as.array(round_data$homeSquad),
+                     pred_away = as.array(round_data$awaySquad),
+                     first_round = 0))
+
+```
+
+Now I can run it:
+
+```{r stan-model,cache=TRUE}
+output <- sampling(
+    model,
+    data = stan_data,
+    iter = 2000,
+    chains = cores,
+    thin = 5,
+    open_progress = FALSE,
+    control = list(adapt_delta = 0.95,
+                   max_treedepth = 10)
+)
+print(output, digits = 1, pars = c("hga", paste0("a[1,", 1:8, "]")))
+print(output, digits = 1, pars = c("pred_ability", "pred_diff", "prob_home"))
+
+```
+
+# Summaries
+
+Now I need to create some summaries. As a highlight, perhaps a histogram of score differences for each game, and the probability of the home team winning.
+
+```{r histogram}
+## Adjusted for finals predictions
+res <- sapply(1, predDiffHist, model = output, game_lookup = round_data)
+## Create a 2x1 grid of the figures.
+pl_grid <- plot_grid(res[[1, 1]])
+save_plot(here("figs", paste0(dir_text, "-plot-grid.png")),
+          pl_grid, base_height = 35 / (1 + sqrt(5)), base_width = 17.5)
+## Save prediction table
+res_table <- bind_rows(res[2, ]) %>%
+    select(
+        Home = homeTeam,
+        Away = awayTeam,
+        `Chance of home team winning` = prob
+    )
+saveRDS(res_table,
+        here("Rmd", "sn-assets", dir_text, "predictions.rds"))
+for (i in 1) {
+    ggsave(here("Rmd", "sn-assets", dir_text, paste0("game-", i, ".png")),
+           res[[1, i]], width = 17.5, height = 35 / (1 + sqrt(5)))
+}
+
+```
+
+# Abilities at the end of Round 4
+
+How do the abilities by the end of **Round 4** look?
+
+```{r abilities,eval=FALSE}
+abilities <- extract(output, "a")$a
+abilities <- as_data_frame(abilities) %>%
+    gather(game, Ability) %>%
+    group_by(game) %>%
+    summarise(
+        ll1 = quantile(Ability, 0.1),
+        ll2 = quantile(Ability, 0.25),
+        med = quantile(Ability, 0.5),
+        ul1 = quantile(Ability, 0.9),
+        ul2 = quantile(Ability, 0.75)
+    )
+ids <- t(sapply(abilities$game, splitRound)) %>%
+    as_data_frame() %>%
+    unnest()
+abilities <- bind_cols(ids, abilities) %>%
+    left_join(., teamLookup, by = "squadInt")
+sq_cols <- teamLookup$squadColour
+names(sq_cols) <- teamLookup$squadName
+## Include the initial abilities in
+init_ability_df <- teamLookup %>%
+    mutate(
+        Round = rep(0, 8),
+        ll1 = init_abilities,
+        ll2 = init_abilities,
+        med = init_abilities,
+        ul1 = init_abilities,
+        ul2 = init_abilities
+    )
+abilities <- bind_rows(init_ability_df, abilities)
+pl_abilities <- ggplot(abilities, aes(x = Round, y = med, group = squadName)) +
+    geom_ribbon(aes(ymin = ll1, ymax = ul1, fill = squadName,
+                    alpha = 0.05)) +
+    geom_ribbon(aes(ymin = ll2, ymax = ul2, fill = squadName,
+                    alpha = 0.05)) +
+    scale_fill_manual(values = sq_cols, guide = "none") +
+    scale_alpha(guide = "none") +
+    geom_line(aes(colour = squadName), lwd = 2) +
+    scale_colour_manual(values = sq_cols, guide = "none") +
+    geom_hline(aes(yintercept = 0), colour = "darkgrey") +
+    facet_wrap(~ squadName, nrow = 2) +
+    ylab("Ability") +
+    xlim(c(0, 14))
+ggsave(here("Rmd", "sn-assets", dir_text, "abilities.png"),
+       pl_abilities, width = 17.5, height = 35 / (1 + sqrt(5)))
+
+```
+
+How do the home ground advantages look?
+
+```{r hga-pred,eval=FALSE}
+hga <- extract(output, "hga")$hga
+hga <- as_data_frame(hga)
+names(hga) <- teamLookup$squadName
+hga <- hga %>%
+    gather(squadName, hga) %>%
+    group_by(squadName) %>%
+    summarise(
+        ll1 = quantile(hga, 0.1),
+        ll2 = quantile(hga, 0.25),
+        med = quantile(hga, 0.5),
+        ul1 = quantile(hga, 0.9),
+        ul2 = quantile(hga, 0.75)
+    )
+pl_hga <- ggplot(hga, aes(x = fct_reorder(squadName, med),
+                          colour = squadName)) +
+    geom_linerange(aes(ymin = ll1, ymax = ul1, alpha = 0.05), lwd = 2) +
+    geom_linerange(aes(ymin = ll2, ymax = ul2, alpha = 0.05), lwd = 2.5) +
+    geom_point(aes(y = med), size = 4, fill = "white", shape = 21) +
+    geom_hline(aes(yintercept = 0), colour = "darkgrey") +
+    scale_colour_manual(values = sq_cols, guide = "none") +
+    scale_alpha(guide = "none") +
+    xlab("Squad") +
+    ylab("Home ground advantage") +
+    coord_flip()
+ggsave(here("Rmd", "sn-assets", dir_text, "hga.png"),
+       pl_hga, width = 17.5, height = 35 / (1 + sqrt(5)))
+
+```
