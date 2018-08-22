@@ -1,0 +1,35 @@
+---
+title: "Preliminary Final, 2018"
+description: "Super Netball Wrap-up"
+date: "2018-08-21"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2018-08-22 19:57:07 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+An excellent game this week, and what stellar form the Lightning are in. I'm really looking forward to next week, it'll be a fantastic game. The Lightning are hot, but the Fever have had the week off. It's going to be hard for the Lightning to win in the West.
+
+The model has got the goods done for this round. The most likely score difference was around six ([see the prediction here]({{< relref "2018-08-15-round16.md" >}})), and as we all know by now, it was the Lightning by nine.
+
+## How did it all pan out?
+
+```{r prediction-table}
+preds <- readRDS(here("Rmd", "sn-assets", "round17-2018", "results_match.rds"))
+knitr::kable(preds)
+
+```
