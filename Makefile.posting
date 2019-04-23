@@ -1,0 +1,527 @@
+# Time-stamp: <2018-08-22 19:45:16 (slane)>
+# This makefile is used to prepare posts for my super netball blog
+.PHONY: all introduction
+
+all: introduction round1
+
+# Use a series of phonies for building
+
+introduction: manuscripts/introduction-analysis.html \
+	Rmd/.intro
+
+round1: manuscripts/round1-2018-analysis.html \
+	Rmd/.round1
+
+round2: manuscripts/round2-2018-analysis.html \
+	Rmd/.round1-wrapup \
+	Rmd/.round2
+
+round3: manuscripts/round3-2018-analysis.html \
+	Rmd/.round2-wrapup \
+	Rmd/.round3
+
+round4: manuscripts/round4-2018-analysis.html \
+	Rmd/.round3-wrapup \
+	Rmd/.round4
+
+round5: manuscripts/round5-2018-analysis.html \
+	Rmd/.round4-wrapup \
+	Rmd/.round5
+
+round6: manuscripts/round6-2018-analysis.html \
+	Rmd/.round5-wrapup \
+	Rmd/.round6
+
+round7: manuscripts/round7-2018-analysis.html \
+	Rmd/.round6-wrapup \
+	Rmd/.round7
+
+round8: manuscripts/round8-2018-analysis.html \
+	Rmd/.round7-wrapup \
+	Rmd/.round8
+
+round9: manuscripts/round9-2018-analysis.html \
+	Rmd/.round8-wrapup \
+	Rmd/.round9
+
+round10: manuscripts/round10-2018-analysis.html \
+	Rmd/.round9-wrapup \
+	Rmd/.round10
+
+round11: manuscripts/round11-2018-analysis.html \
+	Rmd/.round10-wrapup \
+	Rmd/.round11
+
+round12: manuscripts/round12-2018-analysis.html \
+	Rmd/.round11-wrapup \
+	Rmd/.round12
+
+round13: manuscripts/round13-2018-analysis.html \
+	Rmd/.round12-wrapup \
+	Rmd/.round13
+
+round14: manuscripts/round14-2018-analysis.html \
+	Rmd/.round13-wrapup \
+	Rmd/.round14
+
+round15: manuscripts/round15-2018-analysis.html \
+	Rmd/.round14-wrapup \
+	Rmd/.round15
+
+round16: manuscripts/round16-2018-analysis.html \
+	Rmd/.round15-wrapup \
+	Rmd/.round16
+
+round17: manuscripts/round17-2018-analysis.html \
+	Rmd/.round16-wrapup \
+	Rmd/.round17
+
+################################################################################
+manuscripts/introduction-analysis.html: Rmd/introduction-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/intro-2018; \
+	cp -R sn-assets/intro-2018/ ~/github/website/static/sn-assets/intro-2018/
+
+Rmd/.intro: Rmd/introduction.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-04-22-introduction.md; \
+	touch .intro
+
+################################################################################
+manuscripts/round1-2018-analysis.html: Rmd/round1-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round1-2018; \
+	cp -R sn-assets/round1-2018/ ~/github/website/static/sn-assets/round1-2018/
+
+Rmd/.round1: Rmd/round1-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-04-25-round1.md; \
+	touch .round1
+
+################################################################################
+manuscripts/round2-2018-analysis.html: Rmd/round2-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round2-2018; \
+	cp -R sn-assets/round2-2018/ ~/github/website/static/sn-assets/round2-2018/
+
+Rmd/.round1-wrapup: Rmd/round1-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-02-round1-wrapup.md; \
+	touch .round1-wrapup
+
+Rmd/.round2: Rmd/round2-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-03-round2.md; \
+	touch .round2
+
+################################################################################
+manuscripts/round3-2018-analysis.html: Rmd/round3-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round3-2018; \
+	cp -R sn-assets/round3-2018/ ~/github/website/static/sn-assets/round3-2018/
+
+Rmd/.round2-wrapup: Rmd/round2-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-10-round2-wrapup.md; \
+	touch .round2-wrapup
+
+Rmd/.round3: Rmd/round3-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-11-round3.md; \
+	touch .round3
+
+################################################################################
+manuscripts/round4-2018-analysis.html: Rmd/round4-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round4-2018; \
+	cp -R sn-assets/round4-2018/ ~/github/website/static/sn-assets/round4-2018/
+
+Rmd/.round3-wrapup: Rmd/round3-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-16-round3-wrapup.md; \
+	touch .round3-wrapup
+
+Rmd/.round4: Rmd/round4-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-16-round4.md; \
+	touch .round4
+
+################################################################################
+manuscripts/round5-2018-analysis.html: Rmd/round5-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round5-2018; \
+	cp -R sn-assets/round5-2018/ ~/github/website/static/sn-assets/round5-2018/
+
+Rmd/.round4-wrapup: Rmd/round4-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-24-round4-wrapup.md; \
+	touch .round4-wrapup
+
+Rmd/.round5: Rmd/round5-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-05-25-round5.md; \
+	touch .round5
+
+################################################################################
+manuscripts/round6-2018-analysis.html: Rmd/round6-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round6-2018; \
+	cp -R sn-assets/round6-2018/ ~/github/website/static/sn-assets/round6-2018/
+
+Rmd/.round5-wrapup: Rmd/round5-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-01-round5-wrapup.md; \
+	touch .round5-wrapup
+
+Rmd/.round6: Rmd/round6-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-02-round6.md; \
+	touch .round6
+
+################################################################################
+manuscripts/round7-2018-analysis.html: Rmd/round7-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round7-2018; \
+	cp -R sn-assets/round7-2018/ ~/github/website/static/sn-assets/round7-2018/
+
+Rmd/.round6-wrapup: Rmd/round6-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-14-round6-wrapup.md; \
+	touch .round6-wrapup
+
+Rmd/.round7: Rmd/round7-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-15-round7.md; \
+	touch .round7
+
+################################################################################
+manuscripts/round8-2018-analysis.html: Rmd/round8-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round8-2018; \
+	cp -R sn-assets/round8-2018/ ~/github/website/static/sn-assets/round8-2018/
+
+Rmd/.round7-wrapup: Rmd/round7-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-21-round7-wrapup.md; \
+	touch .round7-wrapup
+
+Rmd/.round8: Rmd/round8-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-22-round8.md; \
+	touch .round8
+
+################################################################################
+manuscripts/round9-2018-analysis.html: Rmd/round9-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round9-2018; \
+	cp -R sn-assets/round9-2018/ ~/github/website/static/sn-assets/round9-2018/
+
+Rmd/.round8-wrapup: Rmd/round8-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-28-round8-wrapup.md; \
+	touch .round8-wrapup
+
+Rmd/.round9: Rmd/round9-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-06-29-round9.md; \
+	touch .round9
+
+################################################################################
+manuscripts/round10-2018-analysis.html: Rmd/round10-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round10-2018; \
+	cp -R sn-assets/round10-2018/ ~/github/website/static/sn-assets/round10-2018/
+
+Rmd/.round9-wrapup: Rmd/round9-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-04-round9-wrapup.md; \
+	touch .round9-wrapup
+
+Rmd/.round10: Rmd/round10-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-05-round10.md; \
+	touch .round10
+
+################################################################################
+manuscripts/round11-2018-analysis.html: Rmd/round11-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round11-2018; \
+	cp -R sn-assets/round11-2018/ ~/github/website/static/sn-assets/round11-2018/
+
+Rmd/.round10-wrapup: Rmd/round10-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-11-round10-wrapup.md; \
+	touch .round10-wrapup
+
+Rmd/.round11: Rmd/round11-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-12-round11.md; \
+	touch .round11
+
+################################################################################
+manuscripts/round12-2018-analysis.html: Rmd/round12-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round12-2018; \
+	cp -R sn-assets/round12-2018/ ~/github/website/static/sn-assets/round12-2018/
+
+Rmd/.round11-wrapup: Rmd/round11-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-18-round11-wrapup.md; \
+	touch .round11-wrapup
+
+Rmd/.round12: Rmd/round12-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-19-round12.md; \
+	touch .round12
+
+################################################################################
+manuscripts/round13-2018-analysis.html: Rmd/round13-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round13-2018; \
+	cp -R sn-assets/round13-2018/ ~/github/website/static/sn-assets/round13-2018/
+
+Rmd/.round12-wrapup: Rmd/round12-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-24-round12-wrapup.md; \
+	touch .round12-wrapup
+
+Rmd/.round13: Rmd/round13-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-07-25-round13.md; \
+	touch .round13
+
+################################################################################
+manuscripts/round14-2018-analysis.html: Rmd/round14-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round14-2018; \
+	cp -R sn-assets/round14-2018/ ~/github/website/static/sn-assets/round14-2018/
+
+Rmd/.round13-wrapup: Rmd/round13-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-01-round13-wrapup.md; \
+	touch .round13-wrapup
+
+Rmd/.round14: Rmd/round14-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-02-round14.md; \
+	touch .round14
+
+################################################################################
+manuscripts/round15-2018-analysis.html: Rmd/round15-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round15-2018; \
+	cp -R sn-assets/round15-2018/ ~/github/website/static/sn-assets/round15-2018/
+
+Rmd/.round14-wrapup: Rmd/round14-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-08-round14-wrapup.md; \
+	touch .round14-wrapup
+
+Rmd/.round15: Rmd/round15-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-09-round15.md; \
+	touch .round15
+
+################################################################################
+manuscripts/round16-2018-analysis.html: Rmd/round16-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round16-2018; \
+	cp -R sn-assets/round16-2018/ ~/github/website/static/sn-assets/round16-2018/
+
+Rmd/.round15-wrapup: Rmd/round15-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-14-round15-wrapup.md; \
+	touch .round15-wrapup
+
+Rmd/.round16: Rmd/round16-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-15-round16.md; \
+	touch .round16
+
+################################################################################
+manuscripts/round17-2018-analysis.html: Rmd/round17-2018-analysis.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \
+	mkdir -p ~/github/website/static/sn-assets/round17-2018; \
+	cp -R sn-assets/round17-2018/ ~/github/website/static/sn-assets/round17-2018/
+
+Rmd/.round16-wrapup: Rmd/round16-2018-wrapup.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-21-round16-wrapup.md; \
+	touch .round16-wrapup
+
+Rmd/.round17: Rmd/round17-2018.Rmd
+	cd $(<D); \
+	Rscript --no-save --no-restore -e \
+		"knitr::knit('$(<F)', output = '$(subst Rmd,md,$(<F))')"; \
+	sed -i.bk 's/sn-assets\//\/sn-assets\//g' $(subst Rmd,md,$(<F)); \
+	mv $(subst Rmd,md,$(<F)) \
+		~/github/website/content/post/2018-08-22-round17.md; \
+	touch .round17
