@@ -12,8 +12,8 @@
 #'     by-product, the function saves the data.
 updateData <- function(year, round, comp_id = "10393") {
   if (round != 1) {
-    season <- readRDS(here("data-raw", paste0("season_", year), ".rds"))
-    players <- readRDS(here("data-raw", paste0("players_", year), ".rds"))
+    season <- readRDS(here("data-raw", paste0("season_", year, ".rds")))
+    players <- readRDS(here("data-raw", paste0("players_", year, ".rds")))
     if (max(season[['round']]) >= round) {
       stop("Up-to-date data is already available; proceed to modelling.\n")
     }
@@ -30,8 +30,8 @@ updateData <- function(year, round, comp_id = "10393") {
       players <- bind_rows(players, tidied_players)
     }
   }
-  saveRDS(season, here("data-raw", paste0("season_", year), ".rds"))
-  saveRDS(players, here("data-raw", paste0("players_", year), ".rds"))
+  saveRDS(season, here("data-raw", paste0("season_", year, ".rds")))
+  saveRDS(players, here("data-raw", paste0("players_", year, ".rds")))
 }
 
 #' Matches the predictions
