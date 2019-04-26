@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Run model post-grand final.
-## Time-stamp: <2019-04-26 14:09:00 (slane)>
+## Time-stamp: <2019-04-26 14:27:00 (slane)>
 ################################################################################
 ################################################################################
 
@@ -166,6 +166,25 @@ pl_hga <- ggplot(hga, aes(x = forcats::fct_reorder(squadName, med),
     coord_flip()
 
 ################################################################################
+## Priors for next season.
+next_year <- year + 1
+abilities_latest <- abilities %>%
+  filter(Round == 18) %>%
+  select(squadInt, squadName, med, sigma)
+abilities_sd <- fitPosteriorTeams(output, "sigma_eta", teamLookup)
+hga_post <- rstan::extract(output, "hga")$hga %>%
+                                 as.data.frame()
+names(hga_post) <- teamLookup$squadName
+hga_post <- hga_post %>%
+  gather(squadName, value) %>%
+  group_by(squadName) %>%
+  summarise(value = median(value))
+## Singular fits
+hga_sd <- fitPosteriorSingle(output, "sigma_hga")
+sigma_y <- fitPosteriorSingle(output, "sigma_y")
+
+
+################################################################################
 ## Save out assets etc.
 dirname <- paste0("data/sn-assets-", year, "-round-", round)
 if (!dir.exists(here(dirname))) {
@@ -180,8 +199,10 @@ ggsave(
   pl_hga,
   width = 17.5, height = 35 / (1 + sqrt(5))
 )
-
-## saveRDS(
-##   stan_data,
-##   here(dirname, "stan_data.rds")
-## )
+saveRDS(abilities_latest, here("data", paste0("initial_abilities_", next_year,
+  ".rds")))
+saveRDS(abilities_sd, here("data", paste0("initial_abilities_sd_", next_year,
+  ".rds")))
+saveRDS(hga_post, here("data", paste0("initial_hga_", next_year, ".rds")))
+saveRDS(hga_sd, here("data", paste0("initial_hga_sd_", next_year, ".rds")))
+saveRDS(sigma_y, here("data", paste0("initial_sigma_y_", next_year, ".rds")))
