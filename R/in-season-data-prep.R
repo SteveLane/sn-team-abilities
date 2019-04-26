@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Produces data for modelling in-season matches.
-## Time-stamp: <2019-04-23 14:54:49 (slane)>
+## Time-stamp: <2019-04-23 17:02:58 (slane)>
 ################################################################################
 ################################################################################
 
@@ -32,7 +32,6 @@ library(tidyr)
 library(purrr)
 source(here("R", "updateData.R"))
 source(here("R", "fit_funs.R"))
-message("The home teams are:", opt$home)
 
 ## check that it contains up to date information
 round <- as.integer(opt$round)
@@ -56,7 +55,6 @@ match_results <- matchResults(data) %>%
 
 ################################################################################
 ## Load priors for the model, and the model statement.
-## model <- stan_model(here("stan", paste0("season_", year, ".stan")))
 init_abilities <- readRDS(here("data", paste0("shrunken_abilities_", year, ".rds")))
 abilities_sd <- readRDS(here("data", paste0("initial_abilities_sd_", year, ".rds")))
 hga_post <- readRDS(here("data", paste0("initial_hga_", year, ".rds")))
