@@ -1,16 +1,10 @@
-# Time-stamp: <2017-07-10 21:39:39 (slane)>
-.PHONY: data outputs figures
-
-DATA= data/sn-ladder.json data/sn-scores-teams.json
-data: $(DATA)
-
-OUTPUTS= data/predDiffs.rds data/abilities.rds
-outputs: $(OUTPUTS)
-
-FIGURES= graphics/abilities-vixens-lightning.png \
-	graphics/score-diff-vixens.png \
-	graphics/score-diff-all.png
-figures: $(FIGURES)
+# Time-stamp: <2019-04-26 15:28:00 (slane)>
+# Generate the shrunken priors from last season.
+.PHONY: shrinking
+shrinking: data/shrunken_abilities_2019.rds
+data/shrunken_abilities_2019.rds: R/post-finals-model.R data-raw/season_2018.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2018 round 17 comp_id 10394
 
 ################################################################################
 # Grab and process data
