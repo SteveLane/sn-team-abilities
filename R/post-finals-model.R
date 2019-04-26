@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Run model post-grand final.
-## Time-stamp: <2019-04-26 14:27:00 (slane)>
+## Time-stamp: <2019-04-26 15:20:49 (slane)>
 ################################################################################
 ################################################################################
 
@@ -42,8 +42,7 @@ source(here("R", "fit_funs.R"))
 ## Update data with grand final outcome.
 year <- as.integer(opt$year)
 round <- as.integer(opt$round)
-prev_round <- round - 1
-updateFinals(year, prev_round, opt$comp_id, finals_round = 3)
+updateFinals(year, round, opt$comp_id, finals_round = 3)
 fname <- paste0("data-raw/season_", year, ".rds")
 data <- readRDS(here(fname))
 model_data <- data %>%
@@ -54,8 +53,7 @@ model_data <- data %>%
   group_by(round, game) %>%
   mutate(game_results = map(data, spreadGame)) %>%
   select(-data) %>%
-  unnest() %>%
-  filter(round <= prev_round)
+  unnest()
 
 teamLookup <- readRDS(here::here("data", "teamLookup.rds"))
 model_data <- left_join(model_data, teamLookup,
@@ -169,7 +167,7 @@ pl_hga <- ggplot(hga, aes(x = forcats::fct_reorder(squadName, med),
 ## Priors for next season.
 next_year <- year + 1
 abilities_latest <- abilities %>%
-  filter(Round == 18) %>%
+  filter(Round == 17) %>%
   select(squadInt, squadName, med, sigma)
 abilities_sd <- fitPosteriorTeams(output, "sigma_eta", teamLookup)
 hga_post <- rstan::extract(output, "hga")$hga %>%
@@ -182,7 +180,23 @@ hga_post <- hga_post %>%
 ## Singular fits
 hga_sd <- fitPosteriorSingle(output, "sigma_hga")
 sigma_y <- fitPosteriorSingle(output, "sigma_y")
-
+## Shrink the final abilities
+abilities_sd <- abilities_sd %>%
+  mutate(mean = shape / rate)
+stan_shrink <- with(abilities_latest,
+  list(nteams = nrow(abilities_latest), ability = med,
+    ability_sd = abilities_sd$mean))
+shrink_model <- stan_model(here("stan", "shrink_abilities.stan"))
+shrink <- sampling(
+  shrink_model,
+  data = stan_shrink,
+  iter = 2000,
+  chains = cores,
+  open_progress = FALSE,
+  control = list(adapt_delta = 0.95, max_treedepth = 10)
+)
+new_ability <- rstan::extract(shrink, "theta")$theta
+new_ability <- apply(new_ability, 2, median)
 
 ################################################################################
 ## Save out assets etc.
@@ -200,6 +214,8 @@ ggsave(
   width = 17.5, height = 35 / (1 + sqrt(5))
 )
 saveRDS(abilities_latest, here("data", paste0("initial_abilities_", next_year,
+  ".rds")))
+saveRDS(new_ability, here("data", paste0("shrunken_abilities_", next_year,
   ".rds")))
 saveRDS(abilities_sd, here("data", paste0("initial_abilities_sd_", next_year,
   ".rds")))
