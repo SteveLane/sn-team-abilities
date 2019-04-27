@@ -3,35 +3,35 @@
 #' \code{updateData} downloads the provided round, and joins with all seasonal
 #' data.
 #'
+#' @param year Integer. Year of the competition.
 #' @param round Integer. The round number to download and join.
 #' @param comp_id A string identifying which season the game is
 #'     in. \code{comp_id} is different depending on regular season or finals.
 #'
 #' @return A dataframe containing the full (to date) seasons data. As a
 #'     by-product, the function saves the data.
-updateData <- function(round, comp_id = "10393") {
-    if (round != 1) {
-        season_2018 <- readRDS(here("data-raw", "season_2018.rds"))
-        players_2018 <- readRDS(here("data-raw", "players_2018.rds"))
-        if (max(season_2018[['round']]) == round) {
-            return(season_2018)
-        }
+updateData <- function(year, round, comp_id = "10393") {
+  if (round != 1) {
+    season <- readRDS(here("data-raw", paste0("season_", year, ".rds")))
+    players <- readRDS(here("data-raw", paste0("players_", year, ".rds")))
+    if (max(season[['round']]) >= round) {
+      stop("Up-to-date data is already available; proceed to modelling.\n")
     }
-    for (i in seq_len(4)) {
-        data <- downloadMatch(comp_id, round, i)
-        tidied_data <- tidyMatch(data)
-        tidied_players <- tidyPlayers(data)
-        if (round == 1 && i == 1) {
-            season_2018 <- tidied_data
-            players_2018 <- tidied_players
-        } else {
-            season_2018 <- bind_rows(season_2018, tidied_data)
-            players_2018 <- bind_rows(players_2018, tidied_players)
-        }
+  }
+  for (i in seq_len(4)) {
+    data <- downloadMatch(comp_id, round, i)
+    tidied_data <- tidyMatch(data)
+    tidied_players <- tidyPlayers(data)
+    if (round == 1 && i == 1) {
+      season <- tidied_data
+      players <- tidied_players
+    } else {
+      season <- bind_rows(season, tidied_data)
+      players <- bind_rows(players, tidied_players)
     }
-    saveRDS(season_2018, here("data-raw", "season_2018.rds"))
-    saveRDS(players_2018, here("data-raw", "players_2018.rds"))
-    season_2018
+  }
+  saveRDS(season, here("data-raw", paste0("season_", year, ".rds")))
+  saveRDS(players, here("data-raw", paste0("players_", year, ".rds")))
 }
 
 #' Matches the predictions
@@ -85,22 +85,21 @@ matchPredictions <- function(round, year, results) {
 #'
 #' @return A dataframe containing the full (to date) seasons data. As a
 #'     by-product, the function saves the data.
-updateFinals <- function(round, comp_id, finals_round) {
-    season_2018 <- readRDS(here("data-raw", "season_2018.rds"))
-    players_2018 <- readRDS(here("data-raw", "players_2018.rds"))
-    if (max(season_2018[['round']]) == round) {
-        return(season_2018)
+updateFinals <- function(year, round, comp_id, finals_round) {
+  season <- readRDS(here("data-raw", paste0("season_", year, ".rds")))
+  players <- readRDS(here("data-raw", paste0("players_", year, ".rds")))
+  if (max(season[['round']]) == round) {
+    stop("Up-to-date data is already available; proceed to modelling.\n")
+  }
+  for (i in seq_len(4)) {
+    data <- downloadMatch(comp_id, finals_round, i)
+    if (!is.null(data)) {
+      tidied_data <- tidyMatch(data)
+      tidied_players <- tidyPlayers(data)
+      season <- bind_rows(season, tidied_data)
+      players <- bind_rows(players, tidied_players)
     }
-    for (i in seq_len(4)) {
-        data <- downloadMatch(comp_id, finals_round, i)
-        if (!is.null(data)) {
-            tidied_data <- tidyMatch(data)
-            tidied_players <- tidyPlayers(data)
-            season_2018 <- bind_rows(season_2018, tidied_data)
-            players_2018 <- bind_rows(players_2018, tidied_players)
-        }
-    }
-    saveRDS(season_2018, here("data-raw", "season_2018.rds"))
-    saveRDS(players_2018, here("data-raw", "players_2018.rds"))
-    season_2018
+  }
+  saveRDS(season, here("data-raw", paste0("season_", year, ".rds")))
+  saveRDS(players, here("data-raw", paste0("players_", year, ".rds")))
 }

@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Sunday, 22 April 2018
 ## Synopsis: Description
-## Time-stamp: <2018-04-25 19:24:25 (slane)>
+## Time-stamp: <2019-04-27 12:33:56 (slane)>
 ################################################################################
 ################################################################################
 ## Function have home team, away team, and score difference on a single row for
@@ -26,17 +26,17 @@ spreadGame <- function(df) {
 predDiffHist <- function(game, model, game_lookup) {
     home <- toupper(game_lookup$homeTeam[game])
     away <- toupper(game_lookup$awayTeam[game])
-    pred_diff <- extract(model, paste0("pred_diff[", game, "]"))[[1]]
+    pred_diff <- rstan::extract(model, paste0("pred_diff[", game, "]"))[[1]]
     dens <- density(pred_diff)
     ## Add 50% interval
     ll <- quantile(pred_diff, 0.25)
     ul <- quantile(pred_diff, 0.75)
-    pred_df <- data_frame(score_diff = dens$x, y = dens$y) %>%
+    pred_df <- tibble(score_diff = dens$x, y = dens$y) %>%
         mutate(prob_win = ifelse(score_diff > 0, home, away))
     col_list = c(game_lookup$homeColour[game],
                  game_lookup$awayColour[game])
     names(col_list) <- c(home, away)
-    prob <- extract(model, paste0("prob_home[", game, "]"))[[1]]
+    prob <- rstan::extract(model, paste0("prob_home[", game, "]"))[[1]]
     prob <- round(mean(prob) * 100)
     title_text <- paste0(home, " v.s. ", away)
     subtitle_text <- paste0("Chance of ", home, " winning: ", prob, "%")
@@ -60,7 +60,7 @@ predDiffHist <- function(game, model, game_lookup) {
 ## Function to split up round/game names
 splitRound <- function(rnd) {
     rnd <- unlist(strsplit(rnd, "\\."))
-    data_frame(Round = as.numeric(rnd[1]),
+    tibble(Round = as.numeric(rnd[1]),
                squadInt = as.numeric(rnd[2]))
 }
 
@@ -68,14 +68,14 @@ splitRound <- function(rnd) {
 fitGamma <- function(df, dname) {
     x <- df[[dname]]
     gam <- MASS::fitdistr(x, "gamma")
-    data_frame(shape = gam$estimate[1], rate = gam$estimate[2])
+    tibble(shape = gam$estimate[1], rate = gam$estimate[2])
 }
 
 ## Functions to calculate approximate team posteriors to act as priors in new
 ## seasons
 fitPosteriorTeams <- function(model, parameter, team_lookup) {
-    ests <- extract(model, parameter)[[1]] %>%
-        as_data_frame()
+    ests <- rstan::extract(model, parameter)[[1]] %>%
+        as.data.frame()
     names(ests) <- teamLookup$squadName
     ests <- ests %>%
         gather(squadName, value) %>%
@@ -89,8 +89,8 @@ fitPosteriorTeams <- function(model, parameter, team_lookup) {
 }
 
 fitPosteriorSingle <- function(model, parameter) {
-    ests <- extract(model, parameter) %>%
-        as_data_frame()
+    ests <- rstan::extract(model, parameter) %>%
+        as.data.frame()
     names(ests) <- "value"
     ests <- fitGamma(ests, dname = "value")
     ests
