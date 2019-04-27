@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Fits the model to in-season matches.
-## Time-stamp: <2019-04-27 13:00:56 (slane)>
+## Time-stamp: <2019-04-27 13:07:56 (slane)>
 ################################################################################
 ################################################################################
 
@@ -127,7 +127,7 @@ pl_hga <- ggplot(hga, aes(x = forcats::fct_reorder(squadName, med),
 res <- sapply(1:4, predDiffHist, model = output, game_lookup = round_data)
 pl_grid <- plot_grid(res[[1, 1]], res[[1, 2]], res[[1, 3]], res[[1, 4]])
 save_plot(
-  here(dirname, "round1-2018-plot-grid.png"),
+  here(dirname, "plot-grid.png"),
   pl_grid,
   base_height = 70 / (1 + sqrt(5)),
   base_width = 35
