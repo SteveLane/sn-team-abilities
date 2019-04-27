@@ -4,7 +4,7 @@
 ## Author: Steve Lane
 ## Date: Sunday, 22 April 2018
 ## Synopsis: Description
-## Time-stamp: <2019-04-26 14:16:01 (slane)>
+## Time-stamp: <2019-04-27 12:33:56 (slane)>
 ################################################################################
 ################################################################################
 ## Function have home team, away team, and score difference on a single row for
@@ -31,7 +31,7 @@ predDiffHist <- function(game, model, game_lookup) {
     ## Add 50% interval
     ll <- quantile(pred_diff, 0.25)
     ul <- quantile(pred_diff, 0.75)
-    pred_df <- data_frame(score_diff = dens$x, y = dens$y) %>%
+    pred_df <- tibble(score_diff = dens$x, y = dens$y) %>%
         mutate(prob_win = ifelse(score_diff > 0, home, away))
     col_list = c(game_lookup$homeColour[game],
                  game_lookup$awayColour[game])
@@ -60,7 +60,7 @@ predDiffHist <- function(game, model, game_lookup) {
 ## Function to split up round/game names
 splitRound <- function(rnd) {
     rnd <- unlist(strsplit(rnd, "\\."))
-    data_frame(Round = as.numeric(rnd[1]),
+    tibble(Round = as.numeric(rnd[1]),
                squadInt = as.numeric(rnd[2]))
 }
 
@@ -68,7 +68,7 @@ splitRound <- function(rnd) {
 fitGamma <- function(df, dname) {
     x <- df[[dname]]
     gam <- MASS::fitdistr(x, "gamma")
-    data_frame(shape = gam$estimate[1], rate = gam$estimate[2])
+    tibble(shape = gam$estimate[1], rate = gam$estimate[2])
 }
 
 ## Functions to calculate approximate team posteriors to act as priors in new

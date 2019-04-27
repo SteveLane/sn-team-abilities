@@ -36,11 +36,12 @@ source(here("R", "fit_funs.R"))
 ## check that it contains up to date information
 round <- as.integer(opt$round)
 year <- as.integer(opt$year)
-prev_round <- round - 1
 if (round == 1) {
   ## Load previous year's data just to have a consistent framework.
   fname <- paste0("data-raw/season_", year - 1, ".rds")
   data <- readRDS(here(fname))
+  ## put previous round as round 1 to get appropriate data.
+  prev_round <- round
 } else {
   ## Compile and load the appropriate seasons data
   updateData(year, prev_round, opt$comp_id)
@@ -51,6 +52,7 @@ if (round == 1) {
     filter(round == prev_round)
   ladder <- ladders(data, prev_round)
   results <- matchPredictions(prev_round, opt$year, match_results)
+  prev_round <- round - 1
 }
 
 ################################################################################
@@ -91,19 +93,22 @@ round_data <- tibble(homeSquad = home, awaySquad = away) %>%
   left_join(., teamLookup, by = c("awaySquad" = "squadInt")) %>%
   rename(awayTeam = squadName,
     awayColour = squadColour)
-stan_data <- with(
-  model_data, list(nteams = 8, ngames = nrow(model_data),
-    nrounds = ifelse(round == 1, 1, max(round)), round_no = round,
-    home = homeInt, away = awayInt, score_diff = score_diff,
-    init_ability = init_abilities,
-    init_sd = cbind(abilities_sd[,2], abilities_sd[,3]),
-    mu_hga = hga_post$value,
-    init_sigma_hga = as.numeric(hga_sd),
-    init_sigma_y = as.numeric(sigma_y),
-    ngames_pred = length(home),
-    pred_home = round_data$homeSquad,
-    pred_away = round_data$awaySquad,
-    first_round = ifelse(round == 1, 1, 0))
+nrounds <- ifelse(round == 1, 1, max(model_data$round))
+stan_data <- list(
+  nteams = 8, ngames = nrow(model_data),
+  nrounds = ifelse(round == 1, 1, max(model_data$round)),
+  round_no = model_data$round,
+  home = model_data$homeInt, away = model_data$awayInt,
+  score_diff = model_data$score_diff,
+  init_ability = init_abilities,
+  init_sd = cbind(abilities_sd[,2], abilities_sd[,3]),
+  mu_hga = hga_post$value,
+  init_sigma_hga = as.numeric(hga_sd),
+  init_sigma_y = as.numeric(sigma_y),
+  ngames_pred = length(home),
+  pred_home = round_data$homeSquad,
+  pred_away = round_data$awaySquad,
+  first_round = ifelse(round == 1, 1, 0)
 )
 
 ################################################################################
