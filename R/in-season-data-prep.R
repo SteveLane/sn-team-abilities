@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Produces data for modelling in-season matches.
-## Time-stamp: <2019-04-23 17:02:58 (slane)>
+## Time-stamp: <2019-04-27 12:02:00 (slane)>
 ################################################################################
 ################################################################################
 
@@ -35,23 +35,23 @@ source(here("R", "fit_funs.R"))
 
 ## check that it contains up to date information
 round <- as.integer(opt$round)
+year <- as.integer(opt$year)
 prev_round <- round - 1
 if (round == 1) {
-  stop("No matches have been played yet, aborting.\n")
+  ## Load previous year's data just to have a consistent framework.
+  fname <- paste0("data-raw/season_", year - 1, ".rds")
+  data <- readRDS(here(fname))
+} else {
+  ## Compile and load the appropriate seasons data
+  updateData(year, prev_round, opt$comp_id)
+  fname <- paste0("data-raw/season_", year, ".rds")
+  data <- readRDS(here(fname))
+  ## Match the results and predictions (if in round 2 or greater). Produce ladder.
+  match_results <- matchResults(data) %>%
+    filter(round == prev_round)
+  ladder <- ladders(data, prev_round)
+  results <- matchPredictions(prev_round, opt$year, match_results)
 }
-
-## Compile and load the appropriate seasons data
-year <- as.integer(opt$year)
-updateData(year, prev_round, opt$comp_id)
-fname <- paste0("data-raw/season_", year, ".rds")
-data <- readRDS(here(fname))
-
-################################################################################
-## Match the results and predictions (if in round 2 or greater). Produce ladder.
-match_results <- matchResults(data) %>%
-  filter(round == prev_round)
-## ladder <- ladders(data, prev_round)
-## results <- matchPredictions(prev_round, opt$year, match_results)
 
 ################################################################################
 ## Load priors for the model, and the model statement.
@@ -93,8 +93,8 @@ round_data <- tibble(homeSquad = home, awaySquad = away) %>%
     awayColour = squadColour)
 stan_data <- with(
   model_data, list(nteams = 8, ngames = nrow(model_data),
-    nrounds = max(round), round_no = round, home = homeInt,
-    away = awayInt, score_diff = score_diff,
+    nrounds = ifelse(round == 1, 1, max(round)), round_no = round,
+    home = homeInt, away = awayInt, score_diff = score_diff,
     init_ability = init_abilities,
     init_sd = cbind(abilities_sd[,2], abilities_sd[,3]),
     mu_hga = hga_post$value,
@@ -103,7 +103,7 @@ stan_data <- with(
     ngames_pred = length(home),
     pred_home = round_data$homeSquad,
     pred_away = round_data$awaySquad,
-    first_round = 0)
+    first_round = ifelse(round == 1, 1, 0))
 )
 
 ################################################################################
@@ -120,3 +120,8 @@ saveRDS(
   round_data,
   here(dirname, "game.rds")
 )
+if (round > 1) {
+  ## save the matched results/ladder.
+  saveRDS(results,
+    here(dirname, "results_match.rds"))
+}
