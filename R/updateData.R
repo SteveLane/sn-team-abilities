@@ -43,34 +43,33 @@ updateData <- function(year, round, comp_id = "10393") {
 #'
 #' @return A dataframe containing the predictions and actual results.
 matchPredictions <- function(round, year, results) {
-    rnd <- paste0("round", round, "-", year)
-    teamLookup <- readRDS(here("data", "teamLookup.rds"))
-    game <- readRDS(here("Rmd", "sn-assets", rnd, "game.rds"))
-    predictions <- readRDS(here("Rmd", "sn-assets", rnd,
-                                "predictions.rds")) %>%
-        select(-Away)
-    home <- results %>%
-        ungroup() %>%
-        filter(isHome == 1) %>%
-        select(squadName, home_score = goals, score_diff)
-    away <- results %>%
-        ungroup %>%
-        filter(isHome == 0) %>%
-        select(squadName, away_score = goals)
-    results <- left_join(game, home,
-                         by = c("homeTeam" = "squadName")) %>%
-        left_join(., away, by = c("awayTeam" = "squadName")) %>%
-        left_join(., predictions, by = c("homeTeam" = "Home")) %>%
-        mutate(Winner = case_when(
-                   score_diff > 0 ~ homeTeam,
-                   score_diff < 0 ~ awayTeam,
-                   TRUE ~ "Draw")) %>%
-        select(Home = homeTeam, Away = awayTeam,
-               `Chance of home team winning`,
-               `Home Score` = home_score,
-               `Away Score` = away_score,
-               Winner)
-    results
+  dirname <- paste0("data/sn-assets-", opt$year, "-round-", round)
+  teamLookup <- readRDS(here("data", "teamLookup.rds"))
+  game <- readRDS(here(dirname, "game.rds"))
+  predictions <- readRDS(here(dirname, "predictions.rds")) %>%
+    select(-Away)
+  home <- results %>%
+    ungroup() %>%
+    filter(isHome == 1) %>%
+    select(squadName, home_score = goals, score_diff)
+  away <- results %>%
+    ungroup %>%
+    filter(isHome == 0) %>%
+    select(squadName, away_score = goals)
+  results <- left_join(game, home,
+    by = c("homeTeam" = "squadName")) %>%
+    left_join(., away, by = c("awayTeam" = "squadName")) %>%
+    left_join(., predictions, by = c("homeTeam" = "Home")) %>%
+    mutate(Winner = case_when(
+      score_diff > 0 ~ homeTeam,
+      score_diff < 0 ~ awayTeam,
+      TRUE ~ "Draw")) %>%
+    select(Home = homeTeam, Away = awayTeam,
+      `Chance of home team winning`,
+      `Home Score` = home_score,
+      `Away Score` = away_score,
+      Winner)
+  results
 }
 
 #' Updates the finals match data
