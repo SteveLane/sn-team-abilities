@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Produces data for modelling in-season matches.
-## Time-stamp: <2019-04-27 12:02:00 (slane)>
+## Time-stamp: <2019-05-04 14:10:07 (slane)>
 ################################################################################
 ################################################################################
 
@@ -44,6 +44,7 @@ if (round == 1) {
   prev_round <- round
 } else {
   ## Compile and load the appropriate seasons data
+  prev_round <- round - 1
   updateData(year, prev_round, opt$comp_id)
   fname <- paste0("data-raw/season_", year, ".rds")
   data <- readRDS(here(fname))
@@ -52,7 +53,6 @@ if (round == 1) {
     filter(round == prev_round)
   ladder <- ladders(data, prev_round)
   results <- matchPredictions(prev_round, opt$year, match_results)
-  prev_round <- round - 1
 }
 
 ################################################################################
