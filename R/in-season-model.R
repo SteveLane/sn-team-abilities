@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Fits the model to in-season matches.
-## Time-stamp: <2019-04-27 13:07:56 (slane)>
+## Time-stamp: <2019-05-07 16:45:26 (slane)>
 ################################################################################
 ################################################################################
 
@@ -88,6 +88,7 @@ pl_abilities <- ggplot(abilities, aes(x = Round, y = med)) +
     alpha = 0.05)) +
   geom_ribbon(aes(ymin = ll2, ymax = ul2, fill = squadName,
     alpha = 0.05)) +
+  scale_x_continuous(breaks = 1:17) +
   scale_fill_manual(values = sq_cols, guide = "none") +
   scale_alpha(guide = "none") +
   geom_line(aes(colour = squadName), lwd = 2) +
