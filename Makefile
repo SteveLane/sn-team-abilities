@@ -1,4 +1,4 @@
-# Time-stamp: <2019-05-07 16:28:27 (slane)>
+# Time-stamp: <2019-05-15 16:06:03 (slane)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -94,3 +94,34 @@ Rmd/2019/.round2-wrapup.bk: Rmd/2019/round2-wrapup.Rmd \
 	&& Rscript -e "knitr::knit('$(<F)')" \
 	&& touch .round2-wrapup.bk \
 	&& mv round2-wrapup.md ~/github/website/content/post/2019-05-06-round2-wrapup.md
+
+# round 4 (needs editing, I've just got data at the moment)
+round4: data/sn-assets-2019-round-4/stan_data.rds \
+	data/sn-assets-2019-round-4/plot-grid.png
+data/sn-assets-2019-round-4/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 4 comp_id 10724 \
+		home "3 5 8 6" away "1 7 4 2"
+data/sn-assets-2019-round-4/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-4/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 4 mname season_2018.stan
+# Make blog for round 4
+round4-blog: Rmd/2019/.round4.bk
+Rmd/2019/.round4.bk: Rmd/2019/round4.Rmd \
+	data/sn-assets-2019-round-4/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round4.md ~/github/website/content/post/2019-05-15-round4.md \
+	&& touch .round4.bk \
+  && mkdir -p ~/github/website/static/sn-assets/2019/round4/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/sn-assets-2019-round-4/*.png ~/github/website/static/sn-assets/2019/round4/
+# Wrap up round 3
+round3-wrapup: Rmd/2019/.round3-wrapup.bk
+Rmd/2019/.round3-wrapup.bk: Rmd/2019/round3-wrapup.Rmd \
+	data/sn-assets-2019-round-4/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& touch .round3-wrapup.bk \
+	&& mv round3-wrapup.md ~/github/website/content/post/2019-05-14-round3-wrapup.md
