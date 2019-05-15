@@ -15,7 +15,7 @@ updateData <- function(year, round, comp_id = "10393") {
     season <- readRDS(here("data-raw", paste0("season_", year, ".rds")))
     players <- readRDS(here("data-raw", paste0("players_", year, ".rds")))
     if (max(season[['round']]) >= round) {
-      stop("Up-to-date data is already available; proceed to modelling.\n")
+      warning("Up-to-date data is already available; proceed to modelling.\n")
     }
   }
   for (i in seq_len(4)) {
