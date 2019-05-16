@@ -88,7 +88,7 @@ updateFinals <- function(year, round, comp_id, finals_round) {
   season <- readRDS(here("data-raw", paste0("season_", year, ".rds")))
   players <- readRDS(here("data-raw", paste0("players_", year, ".rds")))
   if (max(season[['round']]) == round) {
-    stop("Up-to-date data is already available; proceed to modelling.\n")
+    message("Up-to-date data is already available; proceed to modelling.\n")
   }
   for (i in seq_len(4)) {
     data <- downloadMatch(comp_id, finals_round, i)
