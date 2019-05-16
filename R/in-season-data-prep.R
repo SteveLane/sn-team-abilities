@@ -101,7 +101,7 @@ stan_data <- list(
   home = model_data$homeInt, away = model_data$awayInt,
   score_diff = model_data$score_diff,
   init_ability = init_abilities,
-  init_sd = cbind(abilities_sd[,2], abilities_sd[,3]),
+  init_sd = cbind(abilities_sd[["shape"]], abilities_sd[["rate"]]),
   mu_hga = hga_post$value,
   init_sigma_hga = as.numeric(hga_sd),
   init_sigma_y = as.numeric(sigma_y),
