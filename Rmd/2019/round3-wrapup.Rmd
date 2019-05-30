@@ -1,0 +1,46 @@
+---
+title: "Round 3, 2019"
+description: "Super Netball Wrap-up"
+date: "2019-05-14"
+tags: ["r", "sports analytics"]
+categories: ["blog", "Super Netball"]
+---
+
+<!-- Time-stamp: <2019-05-07 16:39:41 (slane)> -->
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
+knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE, echo = FALSE, out.width = "900px",
+                      out.height = "506px", dpi = 180, fig.align = "center",
+                      fig.asp = 9/16)
+options(digits = 2)
+
+```
+
+```{r libraries}
+library(here)
+
+```
+
+It's a bit of a lacklustre start to the year for the Firebirds. A draw at home,
+following the loss in the first round sees them in the bottom half of the
+ladder.
+
+The model had the Lightning as slight favourites, yet they blew the Fever away
+with a 25 point win. Model was bang on for the Swifts and Vixens, with large
+wins by those two teams as well. Maybe we're heading towards the calibration
+already?
+
+If you missed my round three predictions, [here they are]({{< relref
+"2019-05-07-round3.md" >}}).
+
+## Wrap-up
+
+```{r prediction-table}
+preds <- readRDS(here("data/sn-assets-2019-round-4", "results_match.rds"))
+knitr::kable(preds)
+
+```
+
+My [Round 4]({{< relref "2019-05-15-round4.md" >}}) predictions are in, so check
+them out!
