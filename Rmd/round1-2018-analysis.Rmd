@@ -50,7 +50,7 @@ abilities_sd <- readRDS(here("data", "initial_abilities_sd_2018.rds"))
 hga_post <- readRDS(here("data", "initial_hga_2018.rds"))
 hga_sd <- readRDS(here("data", "initial_hga_sd_2018.rds"))
 sigma_y <- readRDS(here("data", "initial_sigma_y_2018.rds"))
-nu <- readRDS(here("data", "initial_nu_2018.rds"))
+## nu <- readRDS(here("data", "initial_nu_2018.rds"))
 
 ```
 
@@ -74,6 +74,7 @@ shrink <- sampling(
 
 new_ability <- extract(shrink, "theta")$theta
 new_ability <- apply(new_ability, 2, median)
+saveRDS(new_ability, here("data", "shrunken_abilities_2018.rds"))
 
 ```
 
@@ -118,6 +119,7 @@ round1_2018 <- data_frame(
     left_join(., teamLookup, by = c("awaySquad" = "squadInt")) %>%
     rename(awayTeam = squadName,
            awayColour = squadColour)
+saveRDS(round1_2018, here("Rmd", "sn-assets", "round1-2018", "game.rds"))
 stan_data <- with(
     model_data, list(nteams = 8, ngames = nrow(model_data),
                      nrounds = max(round), round_no = round, home = homeInt,

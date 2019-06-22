@@ -2,7 +2,8 @@
 # This makefile is used to prepare posts for my super netball blog
 .PHONY: all introduction
 
-all: introduction round1
+all: introduction round1 round2 round3 round4 round5 round6 round7 round8 \
+	round9 round10 round11 round12 round13 round14 round15 round16 round17
 
 # Use a series of phonies for building
 
@@ -95,6 +96,7 @@ Rmd/.intro: Rmd/introduction.Rmd
 
 ################################################################################
 manuscripts/round1-2018-analysis.html: Rmd/round1-2018-analysis.Rmd
+	mkdir -p data-raw; \
 	cd $(<D); \
 	Rscript --no-save --no-restore -e \
 		"rmarkdown::render('$(<F)', output_dir = '../manuscripts/')"; \

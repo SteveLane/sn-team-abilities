@@ -237,13 +237,13 @@ hga_post <- hga_post %>%
 ## Singular fit ...
 hga_sd <- fitPosteriorSingle(output, "sigma_hga")
 sigma_y <- fitPosteriorSingle(output, "sigma_y")
-nu <- fitPosteriorSingle(output, "nu")
+## nu <- fitPosteriorSingle(output, "nu")
 
 saveRDS(abilities_latest, here("data", "initial_abilities_2018.rds"))
 saveRDS(abilities_sd, here("data", "initial_abilities_sd_2018.rds"))
 saveRDS(hga_post, here("data", "initial_hga_2018.rds"))
 saveRDS(hga_sd, here("data", "initial_hga_sd_2018.rds"))
 saveRDS(sigma_y, here("data", "initial_sigma_y_2018.rds"))
-saveRDS(nu, here("data", "initial_nu_2018.rds"))
+## saveRDS(nu, here("data", "initial_nu_2018.rds"))
 
 ```
