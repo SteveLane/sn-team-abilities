@@ -95,7 +95,7 @@ output <- sampling(
   model,
   data = stan_data,
   iter = 2000,
-  chains = cores,
+  chains = 6,
   thin = 5,
   open_progress = FALSE,
   control = list(adapt_delta = 0.95,
