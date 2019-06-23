@@ -1,4 +1,4 @@
-# Time-stamp: <2019-05-16 12:13:15 (slane)>
+# Time-stamp: <2019-06-23 20:28:46 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -125,3 +125,86 @@ Rmd/2019/.round3-wrapup.bk: Rmd/2019/round3-wrapup.Rmd \
 	&& Rscript -e "knitr::knit('$(<F)')" \
 	&& touch .round3-wrapup.bk \
 	&& mv round3-wrapup.md ~/github/website/content/post/2019-05-14-round3-wrapup.md
+
+# round 5
+round5: data/sn-assets-2019-round-5/stan_data.rds \
+	data/sn-assets-2019-round-5/plot-grid.png
+data/sn-assets-2019-round-5/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 5 comp_id 10724 \
+		home "3 7 4 1" away "8 2 5 6"
+data/sn-assets-2019-round-5/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-5/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 5 mname season_2018.stan
+
+# round 6 (needs editing, I've just got data at the moment)
+round6: data/sn-assets-2019-round-6/stan_data.rds \
+	data/sn-assets-2019-round-6/plot-grid.png
+data/sn-assets-2019-round-6/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 6 comp_id 10724 \
+		home "7 6 5 2" away "4 8 3 1"
+data/sn-assets-2019-round-6/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-6/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 6 mname season_2018.stan
+
+# round 7 (needs editing, I've just got data at the moment)
+round7: data/sn-assets-2019-round-7/stan_data.rds \
+	data/sn-assets-2019-round-7/plot-grid.png
+data/sn-assets-2019-round-7/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 7 comp_id 10724 \
+		home "1 8 6 4" away "7 2 5 3"
+data/sn-assets-2019-round-7/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-7/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 7 mname season_2018.stan
+
+# round 8 (needs editing, I've just got data at the moment)
+round8: data/sn-assets-2019-round-8/stan_data.rds \
+	data/sn-assets-2019-round-8/plot-grid.png
+data/sn-assets-2019-round-8/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 8 comp_id 10724 \
+		home "7 8 6 5" away "3 1 4 2"
+data/sn-assets-2019-round-8/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-8/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 8 mname season_2018.stan
+
+# round 9 (needs editing, I've just got data at the moment)
+round9: data/sn-assets-2019-round-9/stan_data.rds \
+	data/sn-assets-2019-round-9/plot-grid.png
+data/sn-assets-2019-round-9/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 9 comp_id 10724 \
+		home "7 2 1 3" away "8 4 5 6"
+data/sn-assets-2019-round-9/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-9/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 9 mname season_2018.stan
+
+# round 10
+round10: data/sn-assets-2019-round-10/stan_data.rds \
+	data/sn-assets-2019-round-10/plot-grid.png
+data/sn-assets-2019-round-10/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 10 comp_id 10724 \
+		home "6 8 3 4" away "7 5 2 1"
+data/sn-assets-2019-round-10/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-10/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 10 mname season_2018.stan
+# Make blog for round 10
+round10-blog: Rmd/2019/.round10.bk
+Rmd/2019/.round10.bk: Rmd/2019/round10.Rmd \
+	data/sn-assets-2019-round-10/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round10.md ~/github/website/content/post/2019-07-26-round10.md \
+	&& touch .round10.bk \
+  && mkdir -p ~/github/website/static/sn-assets/2019/round10/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/sn-assets-2019-round-10/*.png ~/github/website/static/sn-assets/2019/round10/
