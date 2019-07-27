@@ -126,12 +126,17 @@ pl_hga <- ggplot(hga, aes(x = forcats::fct_reorder(squadName, med),
 ## Save appropriate outputs and summaries.
 ## Create a 2x2 grid of the figures.
 res <- sapply(1:4, predDiffHist, model = output, game_lookup = round_data)
-pl_grid <- plot_grid(res[[1, 1]], res[[1, 2]], res[[1, 3]], res[[1, 4]])
+pl_grid <- plot_grid(
+  res[[1, 1]] + theme_steve(base_size = 12),
+  res[[1, 2]] + theme_steve(base_size = 12),
+  res[[1, 3]] + theme_steve(base_size = 12),
+  res[[1, 4]] + theme_steve(base_size = 12)
+)
 save_plot(
   here(dirname, "plot-grid.png"),
   pl_grid,
-  base_height = 70 / (1 + sqrt(5)),
-  base_width = 35
+  base_height = 35 / (1 + sqrt(5)),
+  base_width = 17.5
 )
 ## Save prediction table
 res_table <- bind_rows(res[2, ]) %>%
