@@ -208,3 +208,38 @@ Rmd/2019/.round10.bk: Rmd/2019/round10.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/2019/round10/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/sn-assets-2019-round-10/*.png ~/github/website/static/sn-assets/2019/round10/
+	
+# round 11 (needs editing, I've just got data at the moment)
+round11: data/sn-assets-2019-round-11/stan_data.rds \
+	data/sn-assets-2019-round-11/plot-grid.png
+data/sn-assets-2019-round-11/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 11 comp_id 10724 \
+		home "4 7 2 1" away "8 5 6 3"
+data/sn-assets-2019-round-11/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-11/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 11 mname season_2018.stan
+
+# round 12
+round12: data/sn-assets-2019-round-12/stan_data.rds \
+	data/sn-assets-2019-round-12/plot-grid.png
+data/sn-assets-2019-round-12/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 12 comp_id 10724 \
+		home "2 5 6 8" away "7 4 1 3"
+data/sn-assets-2019-round-12/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-12/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 12 mname season_2018.stan
+# Make blog for round 12
+round12-blog: Rmd/2019/.round12.bk
+Rmd/2019/.round12.bk: Rmd/2019/round12.Rmd \
+	data/sn-assets-2019-round-12/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round12.md ~/github/website/content/post/2019-08-08-round12.md \
+	&& touch .round12.bk \
+  && mkdir -p ~/github/website/static/sn-assets/2019/round12/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/sn-assets-2019-round-12/*.png ~/github/website/static/sn-assets/2019/round12/
