@@ -12,6 +12,15 @@
 #'     by-product, the function saves the data.
 updateData <- function(year, round, comp_id = "10393") {
   if (round != 1) {
+    ## Pop in some backups for good measure
+    file.copy(
+      here("data-raw", paste0("season_", year, ".rds")),
+      here("data-raw", paste0("season_", year, "_", lubridate::today(), ".rds"))
+    )
+    file.copy(
+      here("data-raw", paste0("players_", year, ".rds")),
+      here("data-raw", paste0("players_", year, "_", lubridate::today(), ".rds"))
+    )
     season <- readRDS(here("data-raw", paste0("season_", year, ".rds")))
     players <- readRDS(here("data-raw", paste0("players_", year, ".rds")))
     if (max(season[['round']]) >= round) {
