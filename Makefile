@@ -1,13 +1,17 @@
-# Time-stamp: <2020-07-26 20:09:10 (sprazza)>
+# Time-stamp: <2020-07-26 21:03:32 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # Generate the shrunken priors from last season.
+# Utilise data from the end of the home and away matches.
 .PHONY: shrinking
-shrinking: data/shrunken_abilities_2020.rds
-data/shrunken_abilities_2020.rds: R/post-finals-model.R data-raw/season_2019.rds
+YEAR:=2020
+PAST_YEAR:=2019
+shrinking: data/$(YEAR)/shrunken_abilities.rds
+data/$(YEAR)/shrunken_abilities.rds: R/post-finals-model.R \
+		data-raw/season_$(PAST_YEAR).rds
 	cd $(<D) \
-	&& Rscript $(<F) year 2019 round 17 comp_id 10394
+	&& Rscript $(<F) year $(PAST_YEAR) round 14
 
 # Make models for blogging.
 # Round 1
@@ -267,3 +271,4 @@ Rmd/2020/.round1.bk: Rmd/2020/round1.Rmd \
 # 	R/in-season-model.R data/sn-assets-2020-round-14/stan_data.rds
 # 	cd $(<D) \
 # 	&& Rscript $(<F) year 2020 round 14 mname season_2019.stan
+# ATTENTION: after 'round 15' running (which brings in round 14 data), the data needs to be saved so it can be used for pre-season ability setting for next years games.
