@@ -1,4 +1,4 @@
-# Time-stamp: <2019-06-23 20:28:46 (sprazza)>
+# Time-stamp: <2020-07-26 19:51:03 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -208,7 +208,7 @@ Rmd/2019/.round10.bk: Rmd/2019/round10.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/2019/round10/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/sn-assets-2019-round-10/*.png ~/github/website/static/sn-assets/2019/round10/
-	
+
 # round 11 (needs editing, I've just got data at the moment)
 round11: data/sn-assets-2019-round-11/stan_data.rds \
 	data/sn-assets-2019-round-11/plot-grid.png
@@ -243,3 +243,27 @@ Rmd/2019/.round12.bk: Rmd/2019/round12.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/2019/round12/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/sn-assets-2019-round-12/*.png ~/github/website/static/sn-assets/2019/round12/
+
+# round 13 (needs editing, I've just got data at the moment)
+round13: data/sn-assets-2019-round-13/stan_data.rds \
+	data/sn-assets-2019-round-13/plot-grid.png
+data/sn-assets-2019-round-13/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 13 comp_id 10724 \
+		home "3 1 4 8" away "5 2 7 6"
+data/sn-assets-2019-round-13/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-13/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 13 mname season_2018.stan
+
+# round 14 (needs editing, I've just got data at the moment)
+round14: data/sn-assets-2019-round-14/stan_data.rds \
+	data/sn-assets-2019-round-14/plot-grid.png
+data/sn-assets-2019-round-14/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 14 comp_id 10724 \
+		home "2 5 7 3" away "8 6 1 4"
+data/sn-assets-2019-round-14/plot-grid.png: \
+	R/in-season-model.R data/sn-assets-2019-round-14/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year 2019 round 14 mname season_2018.stan
