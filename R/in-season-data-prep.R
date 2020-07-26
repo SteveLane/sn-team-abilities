@@ -57,11 +57,11 @@ if (round == 1) {
 
 ################################################################################
 ## Load priors for the model, and the model statement.
-init_abilities <- readRDS(here("data", paste0(year, "shrunken_abilities.rds")))
-abilities_sd <- readRDS(here("data", paste0(year, "initial_abilities_sd.rds")))
-hga_post <- readRDS(here("data", paste0(year, "initial_hga.rds")))
-hga_sd <- readRDS(here("data", paste0(year, "initial_hga_sd.rds")))
-sigma_y <- readRDS(here("data", paste0(year, "initial_sigma_y.rds")))
+init_abilities <- readRDS(here("data", paste0(year, "/shrunken_abilities.rds")))
+abilities_sd <- readRDS(here("data", paste0(year, "/initial_abilities_sd.rds")))
+hga_post <- readRDS(here("data", paste0(year, "/initial_hga.rds")))
+hga_sd <- readRDS(here("data", paste0(year, "/initial_hga_sd.rds")))
+sigma_y <- readRDS(here("data", paste0(year, "/initial_sigma_y.rds")))
 
 ################################################################################
 ## Transform data into appropriate format for the Stan model.
