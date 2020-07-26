@@ -57,11 +57,11 @@ if (round == 1) {
 
 ################################################################################
 ## Load priors for the model, and the model statement.
-init_abilities <- readRDS(here("data", paste0("shrunken_abilities_", year, ".rds")))
-abilities_sd <- readRDS(here("data", paste0("initial_abilities_sd_", year, ".rds")))
-hga_post <- readRDS(here("data", paste0("initial_hga_", year, ".rds")))
-hga_sd <- readRDS(here("data", paste0("initial_hga_sd_", year, ".rds")))
-sigma_y <- readRDS(here("data", paste0("initial_sigma_y_", year, ".rds")))
+init_abilities <- readRDS(here("data", paste0(year, "shrunken_abilities.rds")))
+abilities_sd <- readRDS(here("data", paste0(year, "initial_abilities_sd.rds")))
+hga_post <- readRDS(here("data", paste0(year, "initial_hga.rds")))
+hga_sd <- readRDS(here("data", paste0(year, "initial_hga_sd.rds")))
+sigma_y <- readRDS(here("data", paste0(year, "initial_sigma_y.rds")))
 
 ################################################################################
 ## Transform data into appropriate format for the Stan model.
@@ -113,7 +113,7 @@ stan_data <- list(
 
 ################################################################################
 ## Save appropriate outputs and summaries.
-dirname <- paste0("data/sn-assets-", opt$year, "-round-", opt$round)
+dirname <- paste0("data/", opt$year, "sn-assets-round-", opt$round)
 if (!dir.exists(here(dirname))) {
   dir.create(here(dirname), recursive = TRUE)
 }
