@@ -67,3 +67,5 @@ Rmd/round17-2018_cache/
 /Rmd/2019/*.bk
 Rmd/*_cache*
 *.json
+/*.bk
+*.bk

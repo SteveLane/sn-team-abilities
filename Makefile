@@ -1,4 +1,4 @@
-# Time-stamp: <2020-07-26 21:16:50 (sprazza)>
+# Time-stamp: <2020-07-26 22:02:00 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -31,7 +31,7 @@ Rmd/$(YEAR)/.round1.bk: Rmd/$(YEAR)/round1.Rmd \
 	data/$(YEAR)/sn-assets-round-1/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round1.md ~/github/website/content/post/$(YEAR)-04-27-round1.md \
+	&& mv round1.md ~/github/website/content/post/$(YEAR)-07-25-round1.md \
 	&& touch .round1.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round1/ \
 	&& cd $(ROOT_DIR) \
