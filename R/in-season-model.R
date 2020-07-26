@@ -44,7 +44,7 @@ theme_set(theme_steve(base_size = 24))
 ## load the appropriate seasons data
 year <- as.integer(opt$year)
 round <- as.integer(opt$round)
-dirname <- paste0("data/", year, "sn-assets-round-", round)
+dirname <- paste0("data/", year, "/sn-assets-round-", round)
 stan_data <- readRDS(here(dirname, "stan_data.rds"))
 round_data <- readRDS(here(dirname, "game.rds"))
 teamLookup <- readRDS(here("data", "teamLookup.rds"))
