@@ -15,7 +15,7 @@ library(methods)
 library(docopt)
 doc <- "
 Usage:
-  post-finals-model.R year <year> round <round> comp_id <comp_id>
+  post-finals-model.R year <year> round <round>
   post-finals-model.R -h | --help
 
 Options:
@@ -34,7 +34,6 @@ library(purrr)
 rstan::rstan_options(auto_write = TRUE)
 cores <- round(parallel::detectCores() - 2)
 options(mc.cores = cores)
-source(here("R", "updateData.R"))
 source(here("R", "fit_funs.R"))
 
 
@@ -42,8 +41,7 @@ source(here("R", "fit_funs.R"))
 ## Update data with grand final outcome.
 year <- as.integer(opt$year)
 round <- as.integer(opt$round)
-updateFinals(year, round, opt$comp_id, finals_round = 3)
-fname <- paste0("data-raw/season_", year, ".rds")
+fname <- paste0("data-raw/season_", year, "_home_and_away.rds")
 data <- readRDS(here(fname))
 model_data <- data %>%
   matchResults() %>%
@@ -71,12 +69,12 @@ round_data <- tibble(homeSquad = c(8), awaySquad = c(7)) %>%
 
 ################################################################################
 ## Run model to get final abilities
-model <- stan_model(here("stan", paste0("season_", year, ".stan")))
-init_abilities <- readRDS(here("data", paste0("shrunken_abilities_", year, ".rds")))
-abilities_sd <- readRDS(here("data", paste0("initial_abilities_sd_", year, ".rds")))
-hga_post <- readRDS(here("data", paste0("initial_hga_", year, ".rds")))
-hga_sd <- readRDS(here("data", paste0("initial_hga_sd_", year, ".rds")))
-sigma_y <- readRDS(here("data", paste0("initial_sigma_y_", year, ".rds")))
+model <- stan_model(here("stan/abilities_model.stan"))
+init_abilities <- readRDS(here("data", paste0(year, "/shrunken_abilities.rds")))
+abilities_sd <- readRDS(here("data", paste0(year, "/initial_abilities_sd.rds")))
+hga_post <- readRDS(here("data", paste0(year, "/initial_hga.rds")))
+hga_sd <- readRDS(here("data", paste0(year, "/initial_hga_sd.rds")))
+sigma_y <- readRDS(here("data", paste0(year, "/initial_sigma_y.rds")))
 stan_data <- with(
   model_data, list(nteams = 8, ngames = nrow(model_data),
     nrounds = max(round), round_no = round, home = homeInt,
@@ -95,7 +93,7 @@ output <- sampling(
   model,
   data = stan_data,
   iter = 2000,
-  chains = 6,
+  chains = 12,
   thin = 5,
   open_progress = FALSE,
   control = list(adapt_delta = 0.95,
@@ -117,7 +115,7 @@ abilities <- as.data.frame(abilities) %>%
         sigma = sd(Ability)
     )
 ids <- t(sapply(abilities$game, splitRound)) %>%
-    as_data_frame() %>%
+    as_tibble() %>%
     unnest()
 abilities <- bind_cols(ids, abilities) %>%
     left_join(., teamLookup, by = "squadInt")
@@ -167,7 +165,7 @@ pl_hga <- ggplot(hga, aes(x = forcats::fct_reorder(squadName, med),
 ## Priors for next season.
 next_year <- year + 1
 abilities_latest <- abilities %>%
-  filter(Round == 17) %>%
+  filter(Round == 14) %>%
   select(squadInt, squadName, med, sigma)
 abilities_sd <- fitPosteriorTeams(output, "sigma_eta", teamLookup)
 hga_post <- rstan::extract(output, "hga")$hga %>%
@@ -200,7 +198,7 @@ new_ability <- apply(new_ability, 2, median)
 
 ################################################################################
 ## Save out assets etc.
-dirname <- paste0("data/sn-assets-", year, "-round-", round)
+dirname <- paste0("data/", next_year, "/pre-season-abilities")
 if (!dir.exists(here(dirname))) {
   dir.create(here(dirname), recursive = TRUE)
 }
@@ -213,12 +211,18 @@ ggsave(
   pl_hga,
   width = 17.5, height = 35 / (1 + sqrt(5))
 )
-saveRDS(abilities_latest, here("data", paste0("initial_abilities_", next_year,
-  ".rds")))
-saveRDS(new_ability, here("data", paste0("shrunken_abilities_", next_year,
-  ".rds")))
-saveRDS(abilities_sd, here("data", paste0("initial_abilities_sd_", next_year,
-  ".rds")))
-saveRDS(hga_post, here("data", paste0("initial_hga_", next_year, ".rds")))
-saveRDS(hga_sd, here("data", paste0("initial_hga_sd_", next_year, ".rds")))
-saveRDS(sigma_y, here("data", paste0("initial_sigma_y_", next_year, ".rds")))
+saveRDS(
+  abilities_latest,
+  here("data", paste0(next_year, "/initial_abilities.rds"))
+)
+saveRDS(
+  new_ability,
+  here("data", paste0(next_year, "/shrunken_abilities.rds"))
+)
+saveRDS(
+  abilities_sd,
+  here("data", paste0(next_year, "/initial_abilities_sd.rds"))
+)
+saveRDS(hga_post, here("data", paste0(next_year, "/initial_hga.rds")))
+saveRDS(hga_sd, here("data", paste0(next_year, "/initial_hga_sd.rds")))
+saveRDS(sigma_y, here("data", paste0(next_year, "/initial_sigma_y.rds")))
