@@ -113,7 +113,7 @@ stan_data <- list(
 
 ################################################################################
 ## Save appropriate outputs and summaries.
-dirname <- paste0("data/", opt$year, "sn-assets-round-", opt$round)
+dirname <- paste0("data/", opt$year, "/sn-assets-round-", opt$round)
 if (!dir.exists(here(dirname))) {
   dir.create(here(dirname), recursive = TRUE)
 }
