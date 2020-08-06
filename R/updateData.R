@@ -52,7 +52,7 @@ updateData <- function(year, round, comp_id = "10393") {
 #'
 #' @return A dataframe containing the predictions and actual results.
 matchPredictions <- function(round, year, results) {
-  dirname <- paste0("data/sn-assets-", opt$year, "-round-", round)
+  dirname <- paste0("data/", year, "/sn-assets-round-", round)
   teamLookup <- readRDS(here("data", "teamLookup.rds"))
   game <- readRDS(here(dirname, "game.rds"))
   predictions <- readRDS(here(dirname, "predictions.rds")) %>%
@@ -75,8 +75,8 @@ matchPredictions <- function(round, year, results) {
       TRUE ~ "Draw")) %>%
     select(Home = homeTeam, Away = awayTeam,
       `Chance of home team winning`,
-      `Home Score` = home_score,
-      `Away Score` = away_score,
+      `Home Goals` = home_score,
+      `Away Goals` = away_score,
       Winner)
   results
 }
