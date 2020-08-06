@@ -52,7 +52,7 @@ if (round == 1) {
   match_results <- matchResults(data) %>%
     filter(round == prev_round)
   ladder <- ladders(data, prev_round)
-  results <- matchPredictions(prev_round, opt$year, match_results)
+  results <- matchPredictions(prev_round, year, match_results)
 }
 
 ################################################################################
