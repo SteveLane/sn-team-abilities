@@ -15,11 +15,13 @@ updateData <- function(year, round, comp_id = "10393") {
     ## Pop in some backups for good measure
     file.copy(
       here("data-raw", paste0("season_", year, ".rds")),
-      here("data-raw", paste0("season_", year, "_", lubridate::today(), ".rds"))
+      here("data-raw/backups/",
+        paste0("season_", year, "_", lubridate::today(), ".rds"))
     )
     file.copy(
       here("data-raw", paste0("players_", year, ".rds")),
-      here("data-raw", paste0("players_", year, "_", lubridate::today(), ".rds"))
+      here("data-raw/backups/",
+        paste0("players_", year, "_", lubridate::today(), ".rds"))
     )
     season <- readRDS(here("data-raw", paste0("season_", year, ".rds")))
     players <- readRDS(here("data-raw", paste0("players_", year, ".rds")))
