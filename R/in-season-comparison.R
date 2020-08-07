@@ -43,131 +43,28 @@ year <- as.integer(opt$year)
 round <- as.integer(opt$round)
 dirname_previous <- paste0("data/", year, "/sn-assets-round-", round - 1)
 dirname_current <- paste0("data/", year, "/sn-assets-round-", round)
-results <- readRDS(here(dirname_current, "results_match.rds"))
+results <- readRDS(here(dirname_current, "results_match.rds")) %>%
+  mutate(diff = `Home Goals` - `Away Goals`)
 output <- readRDS(here(dirname_previous, "model.rds"))
-
-round_data <- readRDS(here(dirname, "game.rds"))
-teamLookup <- readRDS(here("data", "teamLookup.rds"))
-
-################################################################################
-## Run the model.
-model <- stan_model(here("stan", opt$mname))
-output <- sampling(
-  model,
-  data = stan_data,
-  iter = 4000,
-  chains = 6,
-  thin = 5,
-  open_progress = FALSE,
-  control = list(adapt_delta = 0.95,
-    max_treedepth = 10)
-)
-
-################################################################################
-## Abilities and HGA plots
-abilities <- rstan::extract(output, "a")$a
-abilities <- as.data.frame(abilities) %>%
-  gather(game, Ability) %>%
-  group_by(game) %>%
-  summarise(
-    ll1 = quantile(Ability, 0.1),
-    ll2 = quantile(Ability, 0.25),
-    med = quantile(Ability, 0.5),
-    ul1 = quantile(Ability, 0.9),
-    ul2 = quantile(Ability, 0.75)
-  )
-ids <- t(sapply(abilities$game, splitRound)) %>%
-  as.data.frame() %>%
-  unnest()
-abilities <- bind_cols(ids, abilities) %>%
-  left_join(., teamLookup, by = "squadInt")
-sq_cols <- teamLookup$squadColour
-names(sq_cols) <- teamLookup$squadName
-pl_abilities <- ggplot(abilities, aes(x = Round, y = med)) +
-  geom_ribbon(aes(ymin = ll1, ymax = ul1, fill = squadName,
-    alpha = 0.05)) +
-  geom_ribbon(aes(ymin = ll2, ymax = ul2, fill = squadName,
-    alpha = 0.05)) +
-  scale_x_continuous(breaks = 1:17) +
-  scale_fill_manual(values = sq_cols, guide = "none") +
-  scale_alpha(guide = "none") +
-  geom_line(aes(colour = squadName), lwd = 2) +
-  scale_colour_manual(values = sq_cols, guide = "none") +
-  geom_hline(aes(yintercept = 0), colour = "darkgrey") +
-  facet_wrap(~ squadName, nrow = 2) +
-  ylab("Ability")
-
-hga <- rstan::extract(output, "hga")$hga
-hga <- as.data.frame(hga)
-names(hga) <- teamLookup$squadName
-hga <- hga %>%
-  gather(squadName, hga) %>%
-  group_by(squadName) %>%
-  summarise(
-    ll1 = quantile(hga, 0.1),
-    ll2 = quantile(hga, 0.25),
-    med = quantile(hga, 0.5),
-    ul1 = quantile(hga, 0.9),
-    ul2 = quantile(hga, 0.75)
-  )
-pl_hga <- ggplot(hga, aes(x = forcats::fct_reorder(squadName, med),
-  colour = squadName)) +
-  geom_linerange(aes(ymin = ll1, ymax = ul1, alpha = 0.05), lwd = 2) +
-  geom_linerange(aes(ymin = ll2, ymax = ul2, alpha = 0.05), lwd = 2.5) +
-  geom_point(aes(y = med), size = 4, fill = "white", shape = 21) +
-  geom_hline(aes(yintercept = 0), colour = "darkgrey") +
-  scale_colour_manual(values = sq_cols, guide = "none") +
-  scale_alpha(guide = "none") +
-  xlab("Squad") +
-  ylab("Home ground advantage") +
-  coord_flip()
+round_data <- readRDS(here(dirname_previous, "game.rds"))
 
 ################################################################################
 ## Save appropriate outputs and summaries.
 ## Create a 2x2 grid of the figures.
 res <- sapply(1:4, predDiffHist, model = output, game_lookup = round_data)
 pl_grid <- plot_grid(
-  res[[1, 1]] + theme_steve(base_size = 12),
-  res[[1, 2]] + theme_steve(base_size = 12),
-  res[[1, 3]] + theme_steve(base_size = 12),
-  res[[1, 4]] + theme_steve(base_size = 12)
+  res[[1, 1]] + theme_steve(base_size = 12) +
+    geom_vline(xintercept = results[["diff"]][1], size = 2, colour = "blue"),
+  res[[1, 2]] + theme_steve(base_size = 12) +
+    geom_vline(xintercept = results[["diff"]][2], size = 2, colour = "blue"),
+  res[[1, 3]] + theme_steve(base_size = 12) +
+    geom_vline(xintercept = results[["diff"]][3], size = 2, colour = "blue"),
+  res[[1, 4]] + theme_steve(base_size = 12) +
+    geom_vline(xintercept = results[["diff"]][4], size = 2, colour = "blue")
 )
 save_plot(
-  here(dirname, "plot-grid.png"),
+  here(dirname_current, "plot-grid-comparison.png"),
   pl_grid,
   base_height = 35 / (1 + sqrt(5)),
   base_width = 17.5
-)
-## Save prediction table
-res_table <- bind_rows(res[2, ]) %>%
-  select(
-    Home = homeTeam,
-    Away = awayTeam,
-    `Chance of home team winning` = prob
-  )
-saveRDS(
-  res_table,
-  here(dirname, "predictions.rds"))
-for (i in 1:4) {
-  ggsave(
-    here(dirname, paste0("game-", i, ".png")),
-    res[[1, i]],
-    width = 17.5, height = 35 / (1 + sqrt(5))
-  )
-}
-ggsave(
-  here(dirname, "abilities.png"),
-  pl_abilities,
-  width = 17.5, height = 35 / (1 + sqrt(5))
-)
-ggsave(
-  here(dirname, "hga.png"),
-  pl_hga,
-  width = 17.5, height = 35 / (1 + sqrt(5))
-)
-
-## Save model output to add actual results to predicted score diffs
-saveRDS(
-  output,
-  here(dirname, "model.rds")
 )
