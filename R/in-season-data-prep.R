@@ -77,11 +77,13 @@ model_data <- data %>%
   filter(round <= prev_round)
 
 teamLookup <- readRDS(here("data", "teamLookup.rds"))
-model_data <- left_join(model_data, teamLookup,
-  by = c("homeTeam" = "squadName")) %>%
-  rename(homeInt = squadInt, homeColour = squadColour) %>%
-  left_join(., teamLookup, by = c("awayTeam" = "squadName")) %>%
-  rename(awayInt = squadInt, awayColour = squadColour)
+if(round > 1) {
+  model_data <- left_join(model_data, teamLookup,
+    by = c("homeTeam" = "squadName")) %>%
+    rename(homeInt = squadInt, homeColour = squadColour) %>%
+    left_join(., teamLookup, by = c("awayTeam" = "squadName")) %>%
+    rename(awayInt = squadInt, awayColour = squadColour)
+}
 
 ## format the round data
 home <- as.integer(unlist(strsplit(opt$home, " ")))
@@ -93,12 +95,23 @@ round_data <- tibble(homeSquad = home, awaySquad = away) %>%
   left_join(., teamLookup, by = c("awaySquad" = "squadInt")) %>%
   rename(awayTeam = squadName,
     awayColour = squadColour)
+if(round == 1) {
+  model_data <- round_data %>%
+    mutate(
+      round = homeSquad,
+      homeInt = homeSquad,
+      awayInt = awaySquad,
+      score_diff = homeSquad
+    )
+}
 nrounds <- ifelse(round == 1, 1, max(model_data$round))
+
 stan_data <- list(
-  nteams = 8, ngames = nrow(model_data),
+  nteams = 8, ngames = ifelse(round == 1, 4, nrow(model_data)),
   nrounds = ifelse(round == 1, 1, max(model_data$round)),
-  round_no = model_data$round,
-  home = model_data$homeInt, away = model_data$awayInt,
+  round_no = rep(1, 4),
+  home = model_data$homeInt,
+  away = model_data$awayInt,
   score_diff = model_data$score_diff,
   init_ability = init_abilities,
   init_sd = cbind(abilities_sd[["shape"]], abilities_sd[["rate"]]),
