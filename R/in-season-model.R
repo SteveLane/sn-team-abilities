@@ -165,3 +165,9 @@ ggsave(
   pl_hga,
   width = 17.5, height = 35 / (1 + sqrt(5))
 )
+
+## Save model output to add actual results to predicted score diffs
+saveRDS(
+  output,
+  here(dirname, "model.rds")
+)
