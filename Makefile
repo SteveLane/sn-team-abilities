@@ -1,4 +1,4 @@
-# Time-stamp: <2020-08-10 19:03:03 (sprazza)>
+# Time-stamp: <2020-08-10 19:23:43 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -75,7 +75,8 @@ Rmd/$(YEAR)/.round2.bk: Rmd/2020/round2.Rmd \
 
 # round 3
 round3: data/$(YEAR)/sn-assets-round-3/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-3/plot-grid.png
+	data/$(YEAR)/sn-assets-round-3/plot-grid.png \
+	data/$(YEAR)/sn-assets-round-3/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-3/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 3 comp_id 11108 \
@@ -84,6 +85,10 @@ data/$(YEAR)/sn-assets-round-3/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-3/stan_data.rds
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 3 mname abilities_model.stan
+data/$(YEAR)/sn-assets-round-3/plot-grid-no-hga.png: \
+	R/in-season-model-no-hga.R data/$(YEAR)/sn-assets-round-3/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 3 mname abilities_model_no_hga.stan
 # Make blog for round 3
 round3-blog: data/$(YEAR)/sn-assets-round-3/plot-grid-current.png \
 	Rmd/$(YEAR)/.round3.bk
