@@ -73,7 +73,7 @@ model_data <- data %>%
   group_by(round, game) %>%
   mutate(game_results = map(data, spreadGame)) %>%
   select(-data) %>%
-  unnest() %>%
+  unnest(cols = c(game_results)) %>%
   filter(round <= prev_round)
 
 teamLookup <- readRDS(here("data", "teamLookup.rds"))
@@ -95,6 +95,7 @@ round_data <- tibble(homeSquad = home, awaySquad = away) %>%
   left_join(., teamLookup, by = c("awaySquad" = "squadInt")) %>%
   rename(awayTeam = squadName,
     awayColour = squadColour)
+round_no <- model_data$round
 if(round == 1) {
   model_data <- round_data %>%
     mutate(
@@ -103,13 +104,14 @@ if(round == 1) {
       awayInt = awaySquad,
       score_diff = homeSquad
     )
+  round_no <- rep(1, 4)
 }
 nrounds <- ifelse(round == 1, 1, max(model_data$round))
 
 stan_data <- list(
   nteams = 8, ngames = ifelse(round == 1, 4, nrow(model_data)),
   nrounds = ifelse(round == 1, 1, max(model_data$round)),
-  round_no = rep(1, 4),
+  round_no = round_no,
   home = model_data$homeInt,
   away = model_data$awayInt,
   score_diff = model_data$score_diff,
