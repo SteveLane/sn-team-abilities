@@ -1,4 +1,4 @@
-# Time-stamp: <2020-08-07 20:51:02 (sprazza)>
+# Time-stamp: <2020-08-10 19:03:03 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -73,29 +73,34 @@ Rmd/$(YEAR)/.round2.bk: Rmd/2020/round2.Rmd \
 # 	&& touch .round1-wrapup.bk \
 # 	&& mv round1-wrapup.md ~/github/website/content/post/$(YEAR)-05-03-round1-wrapup.md
 
-# # round 3
-# round3: data/$(YEAR)/sn-assets-round-3/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-3/plot-grid.png
-# data/$(YEAR)/sn-assets-round-3/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 3 comp_id 11108 \
-# 		home "1 5 7 2" away "4 8 6 3"
-# data/$(YEAR)/sn-assets-round-3/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-3/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 3 mname abilities_model.stan
-# # Make blog for round 3
-# round3-blog: Rmd/$(YEAR)/.round3.bk
-# Rmd/$(YEAR)/.round3.bk: Rmd/2020/round3.Rmd \
-# 	data/$(YEAR)/sn-assets-round-3/plot-grid.png
-# 	cd $(<D) \
-# 	&& Rscript -e "knitr::knit('$(<F)')" \
-# 	&& mv round3.md ~/github/website/content/post/$(YEAR)-05-07-round3.md \
-# 	&& touch .round3.bk \
-#   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round3/ \
-# 	&& cd $(ROOT_DIR) \
-# 	&& cp data/$(YEAR)/sn-assets-round-3/*.png ~/github/website/static/sn-assets/2020/round3/
-# # Wrap up round 2
+# round 3
+round3: data/$(YEAR)/sn-assets-round-3/stan_data.rds \
+	data/$(YEAR)/sn-assets-round-3/plot-grid.png
+data/$(YEAR)/sn-assets-round-3/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 3 comp_id 11108 \
+		home "2 6 5 4" away "8 3 1 7"
+data/$(YEAR)/sn-assets-round-3/plot-grid.png: \
+	R/in-season-model.R data/$(YEAR)/sn-assets-round-3/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 3 mname abilities_model.stan
+# Make blog for round 3
+round3-blog: data/$(YEAR)/sn-assets-round-3/plot-grid-current.png \
+	Rmd/$(YEAR)/.round3.bk
+data/$(YEAR)/sn-assets-round-3/plot-grid-current.png: \
+	R/in-season-comparison.R data/$(YEAR)/sn-assets-round-3/plot-grid.png
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 3
+Rmd/$(YEAR)/.round3.bk: Rmd/2020/round3.Rmd \
+	data/$(YEAR)/sn-assets-round-3/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round3.md ~/github/website/content/post/$(YEAR)-05-07-round3.md \
+	&& touch .round3.bk \
+  && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round3/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/$(YEAR)/sn-assets-round-3/*.png ~/github/website/static/sn-assets/$(YEAR)/round3/
+# Wrap up round 2
 # round2-wrapup: Rmd/$(YEAR)/.round2-wrapup.bk
 # Rmd/$(YEAR)/.round2-wrapup.bk: Rmd/2020/round2-wrapup.Rmd \
 # 	data/$(YEAR)/sn-assets-round-3/plot-grid.png
@@ -125,7 +130,7 @@ Rmd/$(YEAR)/.round2.bk: Rmd/2020/round2.Rmd \
 # 	&& touch .round4.bk \
 #   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round4/ \
 # 	&& cd $(ROOT_DIR) \
-# 	&& cp data/$(YEAR)/sn-assets-round-4/*.png ~/github/website/static/sn-assets/2020/round4/
+# 	&& cp data/$(YEAR)/sn-assets-round-4/*.png ~/github/website/static/sn-assets/$(YEAR)/round4/
 # # Wrap up round 3
 # round3-wrapup: Rmd/$(YEAR)/.round3-wrapup.bk
 # Rmd/$(YEAR)/.round3-wrapup.bk: Rmd/2020/round3-wrapup.Rmd \
@@ -216,7 +221,7 @@ Rmd/$(YEAR)/.round2.bk: Rmd/2020/round2.Rmd \
 # 	&& touch .round10.bk \
 #   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round10/ \
 # 	&& cd $(ROOT_DIR) \
-# 	&& cp data/$(YEAR)/sn-assets-round-10/*.png ~/github/website/static/sn-assets/2020/round10/
+# 	&& cp data/$(YEAR)/sn-assets-round-10/*.png ~/github/website/static/sn-assets/$(YEAR)/round10/
 
 # # round 11 (needs editing, I've just got data at the moment)
 # round11: data/$(YEAR)/sn-assets-round-11/stan_data.rds \
@@ -251,7 +256,7 @@ Rmd/$(YEAR)/.round2.bk: Rmd/2020/round2.Rmd \
 # 	&& touch .round12.bk \
 #   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round12/ \
 # 	&& cd $(ROOT_DIR) \
-# 	&& cp data/$(YEAR)/sn-assets-round-12/*.png ~/github/website/static/sn-assets/2020/round12/
+# 	&& cp data/$(YEAR)/sn-assets-round-12/*.png ~/github/website/static/sn-assets/$(YEAR)/round12/
 
 # # round 13 (needs editing, I've just got data at the moment)
 # round13: data/$(YEAR)/sn-assets-round-13/stan_data.rds \
