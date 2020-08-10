@@ -43,10 +43,10 @@ year <- as.integer(opt$year)
 round <- as.integer(opt$round)
 dirname_previous <- paste0("data/", year, "/sn-assets-round-", round - 1)
 dirname_current <- paste0("data/", year, "/sn-assets-round-", round)
-results <- readRDS(here(dirname_current, "results_match.rds")) %>%
+results <- readRDS(here(dirname_current, "/results_match.rds")) %>%
   mutate(diff = `Home Goals` - `Away Goals`)
-output <- readRDS(here(dirname_previous, "model.rds"))
-round_data <- readRDS(here(dirname_previous, "game.rds"))
+output <- readRDS(here(dirname_previous, "/model.rds"))
+round_data <- readRDS(here(dirname_previous, "/game.rds"))
 
 ################################################################################
 ## Save appropriate outputs and summaries.
@@ -63,7 +63,7 @@ pl_grid <- plot_grid(
     geom_vline(xintercept = results[["diff"]][4], size = 2, colour = "blue")
 )
 save_plot(
-  here(dirname_current, "plot-grid-comparison.png"),
+  here(dirname_current, "/plot-grid-comparison.png"),
   pl_grid,
   base_height = 35 / (1 + sqrt(5)),
   base_width = 17.5
