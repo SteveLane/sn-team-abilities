@@ -1,4 +1,4 @@
-# Time-stamp: <2020-08-14 19:17:20 (sprazza)>
+# Time-stamp: <2020-08-17 20:08:50 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -147,7 +147,38 @@ Rmd/$(YEAR)/.round4.bk: Rmd/2020/round4.Rmd \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-4/*.png ~/github/website/static/sn-assets/$(YEAR)/round4/
 
-# # round 5
+# round 5
+round5: data/$(YEAR)/sn-assets-round-5/stan_data.rds \
+	data/$(YEAR)/sn-assets-round-5/plot-grid.png \
+	data/$(YEAR)/sn-assets-round-5/plot-grid-no-hga.png
+data/$(YEAR)/sn-assets-round-5/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 5 comp_id 11108 \
+		home "8 6 3 7" away "4 5 1 2"
+data/$(YEAR)/sn-assets-round-5/plot-grid.png: \
+	R/in-season-model.R data/$(YEAR)/sn-assets-round-5/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 5 mname abilities_model.stan
+data/$(YEAR)/sn-assets-round-5/plot-grid-no-hga.png: \
+	R/in-season-model-no-hga.R data/$(YEAR)/sn-assets-round-5/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 5 mname abilities_model_no_hga.stan
+# Make blog for round 5
+round5-blog: data/$(YEAR)/sn-assets-round-5/plot-grid-current.png \
+	Rmd/$(YEAR)/.round5.bk
+data/$(YEAR)/sn-assets-round-5/plot-grid-current.png: \
+	R/in-season-comparison.R data/$(YEAR)/sn-assets-round-5/plot-grid.png
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 5
+Rmd/$(YEAR)/.round5.bk: Rmd/2020/round5.Rmd \
+	data/$(YEAR)/sn-assets-round-5/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round5.md ~/github/website/content/post/$(YEAR)-08-16-round5.md \
+	&& touch .round5.bk \
+  && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round5/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/$(YEAR)/sn-assets-round-5/*.png ~/github/website/static/sn-assets/$(YEAR)/round5/
 # round5: data/$(YEAR)/sn-assets-round-5/stan_data.rds \
 # 	data/$(YEAR)/sn-assets-round-5/plot-grid.png
 # data/$(YEAR)/sn-assets-round-5/stan_data.rds: R/in-season-data-prep.R
