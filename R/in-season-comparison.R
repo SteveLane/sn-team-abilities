@@ -68,3 +68,34 @@ save_plot(
   base_height = 35 / (1 + sqrt(5)),
   base_width = 17.5
 )
+
+################################################################################
+## Calculate MAPE
+mape_round <- sapply(1:4, function (i) {
+  mape(res[[3, i]], results[["diff"]][i])
+})
+## Add to previous rounds MAPE
+round_mape_df <- tibble(
+  round = rep(round - 1, 4), game = 1:4, mape = mape_round
+)
+## Add to results if I want to show them...
+results <- results %>%
+  bind_cols(., MAPE = round_mape_df[["mape"]])
+## Load previous rounds mape
+if (round == 2) {
+  mape_all <- round_mape_df
+} else {
+  mape_all <- readRDS(here::here(paste0("data/", year, "/mape.rds")))
+  mape_all <- mape_all %>%
+    bind_rows(., round_mape_df)
+}
+## Save mape all, average mape, and round results mape
+saveRDS(mape_all, here::here(paste0("data/", year, "/mape.rds")))
+saveRDS(
+  mean(mape_all[["mape"]]),
+  here::here(dirname_current, "/average_mape.rds")
+)
+saveRDS(
+  results,
+  here::here(dirname_current, "/results_mape.rds")
+)

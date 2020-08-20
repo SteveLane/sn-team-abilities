@@ -54,7 +54,19 @@ predDiffHist <- function(game, model, game_lookup) {
     df <- game_lookup %>%
         slice(game) %>%
         mutate(prob = paste0(prob, "%"))
-    list(plot = pl_diff, results = df)
+    list(plot = pl_diff, results = df, density = dens)
+}
+
+## Function to calculate mean absolute prediction error
+mape <- function(density, actual_diff) {
+  trapz <- function(x, y) {
+    idx <- 2:length(x)
+    return (as.double( (x[idx] - x[idx-1]) %*% (y[idx] + y[idx-1])) / 2)
+  }
+  errs <- abs(density$x - actual_diff)
+  fx <- errs * density$y
+  mape <- trapz(density$x, fx)
+  mape
 }
 
 ## Function to split up round/game names
