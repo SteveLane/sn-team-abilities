@@ -80,14 +80,16 @@ round_mape_df <- tibble(
 )
 ## Add to results if I want to show them...
 results <- results %>%
-  bind_cols(., MAPE = round_mape_df[["mape"]])
+  bind_cols(., MAPE = round_mape_df[["mape"]]) %>%
+  select(-Winner, -diff)
 ## Load previous rounds mape
 if (round == 2) {
   mape_all <- round_mape_df
 } else {
   mape_all <- readRDS(here::here(paste0("data/", year, "/mape.rds")))
   mape_all <- mape_all %>%
-    bind_rows(., round_mape_df)
+    bind_rows(., round_mape_df) %>%
+    distinct(round, game, .keep_all = TRUE)
 }
 ## Save mape all, average mape, and round results mape
 saveRDS(mape_all, here::here(paste0("data/", year, "/mape.rds")))
