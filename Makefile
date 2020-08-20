@@ -1,4 +1,4 @@
-# Time-stamp: <2020-08-17 20:08:50 (sprazza)>
+# Time-stamp: <2020-08-20 19:15:25 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -189,6 +189,39 @@ Rmd/$(YEAR)/.round5.bk: Rmd/2020/round5.Rmd \
 # 	R/in-season-model.R data/$(YEAR)/sn-assets-round-5/stan_data.rds
 # 	cd $(<D) \
 # 	&& Rscript $(<F) year $(YEAR) round 5 mname abilities_model.stan
+
+# round 6
+round6: data/$(YEAR)/sn-assets-round-6/stan_data.rds \
+	data/$(YEAR)/sn-assets-round-6/plot-grid.png \
+	data/$(YEAR)/sn-assets-round-6/plot-grid-no-hga.png
+data/$(YEAR)/sn-assets-round-6/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 6 comp_id 11108 \
+		home "5 8 4 7" away "3 6 2 1"
+data/$(YEAR)/sn-assets-round-6/plot-grid.png: \
+	R/in-season-model.R data/$(YEAR)/sn-assets-round-6/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 6 mname abilities_model.stan
+data/$(YEAR)/sn-assets-round-6/plot-grid-no-hga.png: \
+	R/in-season-model-no-hga.R data/$(YEAR)/sn-assets-round-6/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 6 mname abilities_model_no_hga.stan
+# Make blog for round 6
+round6-blog: data/$(YEAR)/sn-assets-round-6/plot-grid-current.png \
+	Rmd/$(YEAR)/.round6.bk
+data/$(YEAR)/sn-assets-round-6/plot-grid-current.png: \
+	R/in-season-comparison.R data/$(YEAR)/sn-assets-round-6/plot-grid.png
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 6
+Rmd/$(YEAR)/.round6.bk: Rmd/2020/round6.Rmd \
+	data/$(YEAR)/sn-assets-round-6/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round6.md ~/github/website/content/post/$(YEAR)-08-19-round6.md \
+	&& touch .round6.bk \
+  && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round6/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/$(YEAR)/sn-assets-round-6/*.png ~/github/website/static/sn-assets/$(YEAR)/round6/
 
 # # round 6 (needs editing, I've just got data at the moment)
 # round6: data/$(YEAR)/sn-assets-round-6/stan_data.rds \
