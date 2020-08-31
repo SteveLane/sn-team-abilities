@@ -1,4 +1,4 @@
-# Time-stamp: <2020-08-26 18:51:34 (sprazza)>
+# Time-stamp: <2020-08-31 18:34:04 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -321,6 +321,37 @@ Rmd/$(YEAR)/.round8.bk: Rmd/2020/round8.Rmd \
 # 	cd $(<D) \
 # 	&& Rscript $(<F) year $(YEAR) round 8 mname abilities_model.stan
 
+round9: data/$(YEAR)/sn-assets-round-9/stan_data.rds \
+	data/$(YEAR)/sn-assets-round-9/plot-grid.png \
+	data/$(YEAR)/sn-assets-round-9/plot-grid-no-hga.png
+data/$(YEAR)/sn-assets-round-9/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 9 comp_id 11108 \
+		home "2 3 1 6" away "4 5 7 8"
+data/$(YEAR)/sn-assets-round-9/plot-grid.png: \
+	R/in-season-model.R data/$(YEAR)/sn-assets-round-9/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 9 mname abilities_model.stan
+data/$(YEAR)/sn-assets-round-9/plot-grid-no-hga.png: \
+	R/in-season-model-no-hga.R data/$(YEAR)/sn-assets-round-9/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 9 mname abilities_model_no_hga.stan
+# Make blog for round 9
+round9-blog: data/$(YEAR)/sn-assets-round-9/plot-grid-current.png \
+	Rmd/$(YEAR)/.round9.bk
+data/$(YEAR)/sn-assets-round-9/plot-grid-current.png: \
+	R/in-season-comparison.R data/$(YEAR)/sn-assets-round-9/plot-grid.png
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 9
+Rmd/$(YEAR)/.round9.bk: Rmd/2020/round9.Rmd \
+	data/$(YEAR)/sn-assets-round-9/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round9.md ~/github/website/content/post/$(YEAR)-08-31-round9.md \
+	&& touch .round9.bk \
+  && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round9/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/$(YEAR)/sn-assets-round-9/*.png ~/github/website/static/sn-assets/$(YEAR)/round9/
 # # round 9 (needs editing, I've just got data at the moment)
 # round9: data/$(YEAR)/sn-assets-round-9/stan_data.rds \
 # 	data/$(YEAR)/sn-assets-round-9/plot-grid.png
