@@ -97,6 +97,20 @@ pl_abilities <- ggplot(abilities, aes(x = Round, y = med)) +
   facet_wrap(~ squadName, nrow = 2) +
   ylab("Ability")
 
+## Output latest ability to show ranking.
+latest_ability <- abilities %>%
+  filter(Round == max(Round))
+pl_latest_ability <- latest_ability %>%
+  ggplot(aes(x = med, y = forcats::fct_reorder(squadName, med))) +
+  geom_linerange(aes(xmin = ll1, xmax = ul1, colour = squadName, alpha = 0.05),
+    show.legend = FALSE, lwd = 2) +
+  geom_linerange(aes(xmin = ll2, xmax = ul2, colour = squadName, alpha = 0.05),
+    show.legend = FALSE, lwd = 2) +
+  geom_point(aes(colour = squadName), show.legend = FALSE,
+    shape = 21, fill = "white", size = 3) +
+  labs(y = "", x = "Ability") +
+  scale_colour_manual(values = sq_cols, guide = "none")
+
 hga <- rstan::extract(output, "hga")$hga
 hga <- as.data.frame(hga)
 names(hga) <- teamLookup$squadName
@@ -158,6 +172,11 @@ for (i in 1:4) {
 ggsave(
   here(dirname, "abilities.png"),
   pl_abilities,
+  width = 17.5, height = 35 / (1 + sqrt(5))
+)
+ggsave(
+  here(dirname, "abilities-latest.png"),
+  pl_latest_ability,
   width = 17.5, height = 35 / (1 + sqrt(5))
 )
 ggsave(
