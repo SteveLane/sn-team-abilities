@@ -364,6 +364,37 @@ Rmd/$(YEAR)/.round9.bk: Rmd/2020/round9.Rmd \
 # 	cd $(<D) \
 # 	&& Rscript $(<F) year $(YEAR) round 9 mname abilities_model.stan
 
+round10: data/$(YEAR)/sn-assets-round-10/stan_data.rds \
+	data/$(YEAR)/sn-assets-round-10/plot-grid.png \
+	data/$(YEAR)/sn-assets-round-10/plot-grid-no-hga.png
+data/$(YEAR)/sn-assets-round-10/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 10 comp_id 11108 \
+		home "4 5 2 1" away "8 6 7 3"
+data/$(YEAR)/sn-assets-round-10/plot-grid.png: \
+	R/in-season-model.R data/$(YEAR)/sn-assets-round-10/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 10 mname abilities_model.stan
+data/$(YEAR)/sn-assets-round-10/plot-grid-no-hga.png: \
+	R/in-season-model-no-hga.R data/$(YEAR)/sn-assets-round-10/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 10 mname abilities_model_no_hga.stan
+# Make blog for round 10
+round10-blog: data/$(YEAR)/sn-assets-round-10/plot-grid-current.png \
+	Rmd/$(YEAR)/.round10.bk
+data/$(YEAR)/sn-assets-round-10/plot-grid-current.png: \
+	R/in-season-comparison.R data/$(YEAR)/sn-assets-round-10/plot-grid.png
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 10
+Rmd/$(YEAR)/.round10.bk: Rmd/2020/round10.Rmd \
+	data/$(YEAR)/sn-assets-round-10/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round10.md ~/github/website/content/post/$(YEAR)-09-04-round10.md \
+	&& touch .round10.bk \
+  && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round10/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/$(YEAR)/sn-assets-round-10/*.png ~/github/website/static/sn-assets/$(YEAR)/round10/
 # # round 10
 # round10: data/$(YEAR)/sn-assets-round-10/stan_data.rds \
 # 	data/$(YEAR)/sn-assets-round-10/plot-grid.png
