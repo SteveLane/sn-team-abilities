@@ -1,4 +1,4 @@
-# Time-stamp: <2020-08-31 18:34:04 (sprazza)>
+# Time-stamp: <2020-09-07 18:50:28 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -418,6 +418,37 @@ Rmd/$(YEAR)/.round10.bk: Rmd/2020/round10.Rmd \
 # 	&& cd $(ROOT_DIR) \
 # 	&& cp data/$(YEAR)/sn-assets-round-10/*.png ~/github/website/static/sn-assets/$(YEAR)/round10/
 
+round11: data/$(YEAR)/sn-assets-round-11/stan_data.rds \
+	data/$(YEAR)/sn-assets-round-11/plot-grid.png \
+	data/$(YEAR)/sn-assets-round-11/plot-grid-no-hga.png
+data/$(YEAR)/sn-assets-round-11/stan_data.rds: R/in-season-data-prep.R
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 11 comp_id 11108 \
+		home "5 7 2 1" away "4 8 3 6"
+data/$(YEAR)/sn-assets-round-11/plot-grid.png: \
+	R/in-season-model.R data/$(YEAR)/sn-assets-round-11/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 11 mname abilities_model.stan
+data/$(YEAR)/sn-assets-round-11/plot-grid-no-hga.png: \
+	R/in-season-model-no-hga.R data/$(YEAR)/sn-assets-round-11/stan_data.rds
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 11 mname abilities_model_no_hga.stan
+# Make blog for round 11
+round11-blog: data/$(YEAR)/sn-assets-round-11/plot-grid-current.png \
+	Rmd/$(YEAR)/.round11.bk
+data/$(YEAR)/sn-assets-round-11/plot-grid-current.png: \
+	R/in-season-comparison.R data/$(YEAR)/sn-assets-round-11/plot-grid.png
+	cd $(<D) \
+	&& Rscript $(<F) year $(YEAR) round 11
+Rmd/$(YEAR)/.round11.bk: Rmd/2020/round11.Rmd \
+	data/$(YEAR)/sn-assets-round-11/plot-grid.png
+	cd $(<D) \
+	&& Rscript -e "knitr::knit('$(<F)')" \
+	&& mv round11.md ~/github/website/content/post/$(YEAR)-09-07-round11.md \
+	&& touch .round11.bk \
+  && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round11/ \
+	&& cd $(ROOT_DIR) \
+	&& cp data/$(YEAR)/sn-assets-round-11/*.png ~/github/website/static/sn-assets/$(YEAR)/round11/
 # # round 11 (needs editing, I've just got data at the moment)
 # round11: data/$(YEAR)/sn-assets-round-11/stan_data.rds \
 # 	data/$(YEAR)/sn-assets-round-11/plot-grid.png
