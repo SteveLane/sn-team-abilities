@@ -113,3 +113,15 @@ updateFinals <- function(year, round, comp_id, finals_round) {
   saveRDS(season, here("data-raw", paste0("season_", year, ".rds")))
   saveRDS(players, here("data-raw", paste0("players_", year, ".rds")))
 }
+
+#' Downloads an entire seasons worth of data
+#'
+#' \code{name} Downloads an entire seasons worth of data
+#'
+#' @param Parameter
+#'
+#' @return Return Value
+download_entire_season <- function(year, comp_id, comp_id_finals) {
+  sapply(1:14, function(i) updateData(year = year, round = 1, comp_id = comp_id))
+  
+}
