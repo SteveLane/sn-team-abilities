@@ -1,11 +1,11 @@
-# Time-stamp: <2020-09-15 18:54:46 (sprazza)>
+# Time-stamp: <2021-04-29 20:08:20 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # Generate the shrunken priors from last season.
 # Utilise data from the end of the home and away matches.
 .PHONY: shrinking
-YEAR:=2020
+YEAR:=2021
 PAST_YEAR:=$(shell expr $(YEAR) \- 1)
 shrinking: data/$(YEAR)/shrunken_abilities.rds
 data/$(YEAR)/shrunken_abilities.rds: R/post-finals-model.R \
