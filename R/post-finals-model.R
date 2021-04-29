@@ -41,7 +41,7 @@ source(here("R", "fit_funs.R"))
 ## Update data with grand final outcome.
 year <- as.integer(opt$year)
 round <- as.integer(opt$round)
-fname <- paste0("data-raw/season_", year, "_home_and_away.rds")
+fname <- paste0("data-raw/season_", year, ".rds")
 data <- readRDS(here(fname))
 model_data <- data %>%
   matchResults() %>%
