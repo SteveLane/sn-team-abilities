@@ -69,3 +69,4 @@ Rmd/*_cache*
 *.json
 /*.bk
 *.bk
+/Rmd/2021/*.md
