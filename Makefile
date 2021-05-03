@@ -1,4 +1,4 @@
-# Time-stamp: <2021-05-03 18:49:22 (sprazza)>
+# Time-stamp: <2021-05-03 18:55:31 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -49,8 +49,8 @@ data/$(YEAR)/sn-assets-round-2/plot-grid.png: \
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 2 mname abilities_model.stan
 # Make blog for round 2
-round2-blog: Rmd/$(YEAR)/.round2.bk \
-	data/$(YEAR)/sn-assets-round-2/plot-grid-current.png
+round2-blog: data/$(YEAR)/sn-assets-round-2/plot-grid-current.png \
+	Rmd/$(YEAR)/.round2.bk
 data/$(YEAR)/sn-assets-round-2/plot-grid-current.png: \
 	R/in-season-comparison.R data/$(YEAR)/sn-assets-round-2/plot-grid.png
 	cd $(<D) \
