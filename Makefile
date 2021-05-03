@@ -1,4 +1,4 @@
-# Time-stamp: <2021-04-29 20:08:20 (sprazza)>
+# Time-stamp: <2021-05-03 16:07:54 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -11,7 +11,7 @@ shrinking: data/$(YEAR)/shrunken_abilities.rds
 data/$(YEAR)/shrunken_abilities.rds: R/post-finals-model.R \
 		data-raw/season_$(PAST_YEAR).rds
 	cd $(<D) \
-	&& Rscript $(<F) year $(PAST_YEAR) round 14
+	&& Rscript $(<F) year $(PAST_YEAR) round 14 comp_id 
 
 # Make models for blogging.
 # Round 1
