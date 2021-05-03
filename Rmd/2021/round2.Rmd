@@ -2,14 +2,11 @@
 title: "Round 2, 2021"
 description: "Super Netball Predictions"
 date: "2021-05-03"
-params:
-  year: 2021
-  round: 2
 tags: ["r", "sports analytics"]
 categories: ["blog", "Super Netball"]
 ---
 
-<!-- Time-stamp: <2021-05-03 19:05:35 (sprazza)> -->
+<!-- Time-stamp: <2021-05-03 19:18:55 (sprazza)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -23,20 +20,16 @@ options(digits = 2)
 ```{r libraries}
 library(here)
 library(glue)
-ave_mape <- readRDS(here(
-  glue("data/{params$year}/sn-assets-round-{params$round}/average_mape.rds")
-))
+ave_mape <- readRDS(here("data/2021/sn-assets-round-2/average_mape.rds"))
 
 ```
 
 To refresh your memory, [here's]({{< relref "2018-04-22-introduction.md" >}}) a description of how my model works.
 
-Predictions for round `r params$round` are given in the table below. The priors for these distributions are based on the final abilities from last season and the results from round `r params$round-1`.
+Predictions for the first round are given in the table below. The priors for these distributions are based on the final abilities from last season and the results from round 2.
 
 ```{r prediction-table}
-preds <- readRDS(here(
-  glue("data/{params$year}/sn-assets-round-{params$round}/predictions.rds")
-))
+preds <- readRDS(here("data/2021/sn-assets-round-2/predictions.rds"))
 knitr::kable(preds)
 
 ```
