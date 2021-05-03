@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Run model post-grand final.
-## Time-stamp: <2019-04-26 15:20:49 (slane)>
+## Time-stamp: <2021-05-03 16:07:25 (sprazza)>
 ################################################################################
 ################################################################################
 
@@ -35,14 +35,22 @@ rstan::rstan_options(auto_write = TRUE)
 cores <- round(parallel::detectCores() - 2)
 options(mc.cores = cores)
 source(here("R", "fit_funs.R"))
+source(here("R", "updateData.R"))
 
 
 ################################################################################
 ## Update data with grand final outcome.
 year <- as.integer(opt$year)
 round <- as.integer(opt$round)
+comp_id <- opt$comp_id
 fname <- paste0("data-raw/season_", year, ".rds")
 data <- readRDS(here(fname))
+## If data is not updated, update it now
+max_round <- max(data$round)
+if (max_round < round) {
+  download_entire_season(year, comp_id, max_round + 1)
+}
+## Transform
 model_data <- data %>%
   matchResults() %>%
   select(-goals, -squadId, -squadNickname, -squadCode, -points) %>%
@@ -51,7 +59,9 @@ model_data <- data %>%
   group_by(round, game) %>%
   mutate(game_results = map(data, spreadGame)) %>%
   select(-data) %>%
-  unnest()
+  unnest() %>%
+  ## Only use home and away data
+  filter(round <= 14)
 
 teamLookup <- readRDS(here::here("data", "teamLookup.rds"))
 model_data <- left_join(model_data, teamLookup,
