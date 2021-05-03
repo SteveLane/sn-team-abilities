@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Run model post-grand final.
-## Time-stamp: <2021-05-03 16:07:25 (sprazza)>
+## Time-stamp: <2021-05-03 16:15:42 (sprazza)>
 ################################################################################
 ################################################################################
 
@@ -15,7 +15,7 @@ library(methods)
 library(docopt)
 doc <- "
 Usage:
-  post-finals-model.R year <year> round <round>
+  post-finals-model.R year <year> round <round> comp_id <comp_id>
   post-finals-model.R -h | --help
 
 Options:
