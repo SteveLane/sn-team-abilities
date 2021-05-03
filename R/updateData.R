@@ -121,8 +121,8 @@ updateFinals <- function(year, round, comp_id, finals_round) {
 #' @param Parameter
 #'
 #' @return Return Value
-download_entire_season <- function(year, comp_id) {
-  sapply(1:14, function(i) updateData(year = year, round = i, comp_id = comp_id))
+download_entire_season <- function(year, comp_id, from_round = 1) {
+  sapply(from_round:14, function(i) updateData(year = year, round = i, comp_id = comp_id))
   finals_id <- as.character(as.integer(comp_id) + 1)
   sapply(1:3, function(i) updateFinals(year = year, round = 14 + i, comp_id = finals_id, finals_round = i))
   message('All downloaded')
