@@ -75,12 +75,12 @@ Rmd/$(YEAR)/.round2.bk: Rmd/$(YEAR)/round2.Rmd \
 
 # round 3
 round3: data/$(YEAR)/sn-assets-round-3/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-3/plot-grid.png \
-	data/$(YEAR)/sn-assets-round-3/plot-grid-no-hga.png
+	data/$(YEAR)/sn-assets-round-3/plot-grid.png
+	# data/$(YEAR)/sn-assets-round-3/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-3/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 3 comp_id 11391 \
-		home "2 6 5 4" away "8 3 1 7"
+		home "3 7 5 2" away "1 8 4 6"
 data/$(YEAR)/sn-assets-round-3/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-3/stan_data.rds
 	cd $(<D) \
@@ -100,7 +100,7 @@ Rmd/$(YEAR)/.round3.bk: Rmd/$(YEAR)/round3.Rmd \
 	data/$(YEAR)/sn-assets-round-3/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round3.md ~/github/website/content/post/$(YEAR)-05-07-round3.md \
+	&& mv round3.md ~/github/website/content/post/$(YEAR)-05-12-round3.md \
 	&& touch .round3.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round3/ \
 	&& cd $(ROOT_DIR) \
