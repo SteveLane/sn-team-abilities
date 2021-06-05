@@ -1,4 +1,4 @@
-# Time-stamp: <2021-05-20 19:56:09 (sprazza)>
+# Time-stamp: <2021-06-05 10:41:24 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -149,12 +149,12 @@ Rmd/$(YEAR)/.round4.bk: Rmd/$(YEAR)/round4.Rmd \
 
 # round 5
 round5: data/$(YEAR)/sn-assets-round-5/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-5/plot-grid.png \
-	data/$(YEAR)/sn-assets-round-5/plot-grid-no-hga.png
+	data/$(YEAR)/sn-assets-round-5/plot-grid.png
+	# data/$(YEAR)/sn-assets-round-5/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-5/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 5 comp_id 11391 \
-		home "8 6 3 7" away "4 5 1 2"
+		home "6 1 5 8" away "4 7 3 2"
 data/$(YEAR)/sn-assets-round-5/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-5/stan_data.rds
 	cd $(<D) \
@@ -174,7 +174,7 @@ Rmd/$(YEAR)/.round5.bk: Rmd/$(YEAR)/round5.Rmd \
 	data/$(YEAR)/sn-assets-round-5/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round5.md ~/github/website/content/post/$(YEAR)-08-16-round5.md \
+	&& mv round5.md ~/github/website/content/post/$(YEAR)-06-04-round5.md \
 	&& touch .round5.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round5/ \
 	&& cd $(ROOT_DIR) \
@@ -192,12 +192,12 @@ Rmd/$(YEAR)/.round5.bk: Rmd/$(YEAR)/round5.Rmd \
 
 # round 6
 round6: data/$(YEAR)/sn-assets-round-6/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-6/plot-grid.png \
-	data/$(YEAR)/sn-assets-round-6/plot-grid-no-hga.png
+	data/$(YEAR)/sn-assets-round-6/plot-grid.png
+	# data/$(YEAR)/sn-assets-round-6/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-6/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 6 comp_id 11391 \
-		home "5 8 4 7" away "3 6 2 1"
+		home "3 2 7 4" away "8 5 6 1"
 data/$(YEAR)/sn-assets-round-6/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-6/stan_data.rds
 	cd $(<D) \
@@ -217,7 +217,7 @@ Rmd/$(YEAR)/.round6.bk: Rmd/$(YEAR)/round6.Rmd \
 	data/$(YEAR)/sn-assets-round-6/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round6.md ~/github/website/content/post/$(YEAR)-08-19-round6.md \
+	&& mv round6.md ~/github/website/content/post/$(YEAR)-06-04-round6.md \
 	&& touch .round6.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round6/ \
 	&& cd $(ROOT_DIR) \
