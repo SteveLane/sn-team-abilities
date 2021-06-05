@@ -1,12 +1,12 @@
 ---
 title: "Round 5, 2021"
 description: "Super Netball Predictions"
-date: "2021-06-04"
+date: "2021-06-03"
 tags: ["r", "sports analytics"]
 categories: ["blog", "Super Netball"]
 ---
 
-<!-- Time-stamp: <2021-06-05 10:45:08 (sprazza)> -->
+<!-- Time-stamp: <2021-06-05 15:16:57 (sprazza)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
