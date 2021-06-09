@@ -1,4 +1,4 @@
-# Time-stamp: <2021-06-05 15:16:59 (sprazza)>
+# Time-stamp: <2021-06-09 15:35:54 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -236,12 +236,12 @@ Rmd/$(YEAR)/.round6.bk: Rmd/$(YEAR)/round6.Rmd \
 # 	&& Rscript $(<F) year $(YEAR) round 6 mname abilities_model.stan
 
 round7: data/$(YEAR)/sn-assets-round-7/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-7/plot-grid.png \
-	data/$(YEAR)/sn-assets-round-7/plot-grid-no-hga.png
+	data/$(YEAR)/sn-assets-round-7/plot-grid.png
+	# data/$(YEAR)/sn-assets-round-7/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-7/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 7 comp_id 11391 \
-		home "8 2 5 1" away "3 6 7 4"
+		home "2 3 1 6" away "7 4 5 8"
 data/$(YEAR)/sn-assets-round-7/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-7/stan_data.rds
 	cd $(<D) \
@@ -261,7 +261,7 @@ Rmd/$(YEAR)/.round7.bk: Rmd/$(YEAR)/round7.Rmd \
 	data/$(YEAR)/sn-assets-round-7/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round7.md ~/github/website/content/post/$(YEAR)-08-24-round7.md \
+	&& mv round7.md ~/github/website/content/post/$(YEAR)-06-09-round7.md \
 	&& touch .round7.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round7/ \
 	&& cd $(ROOT_DIR) \
