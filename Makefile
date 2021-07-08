@@ -1,4 +1,4 @@
-# Time-stamp: <2021-07-08 11:06:38 (sprazza)>
+# Time-stamp: <2021-07-08 11:14:45 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -368,8 +368,8 @@ Rmd/$(YEAR)/.round9.bk: Rmd/$(YEAR)/round9.Rmd \
 # 	&& Rscript $(<F) year $(YEAR) round 9 mname abilities_model.stan
 
 round10: data/$(YEAR)/sn-assets-round-10/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-10/plot-grid.png
-	# data/$(YEAR)/sn-assets-round-10/plot-grid-no-hga.png
+	data/$(YEAR)/sn-assets-round-10/plot-grid.png \
+	data/$(YEAR)/sn-assets-round-10/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-10/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 10 comp_id 11391 \
