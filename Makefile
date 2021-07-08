@@ -1,4 +1,4 @@
-# Time-stamp: <2021-06-20 10:28:12 (sprazza)>
+# Time-stamp: <2021-07-08 11:06:38 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -321,13 +321,16 @@ Rmd/$(YEAR)/.round8.bk: Rmd/$(YEAR)/round8.Rmd \
 # 	cd $(<D) \
 # 	&& Rscript $(<F) year $(YEAR) round 8 mname abilities_model.stan
 
-round9: data/$(YEAR)/sn-assets-round-9/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-9/plot-grid.png \
-	data/$(YEAR)/sn-assets-round-9/plot-grid-no-hga.png
+# Round 9 in 2021 is run manually due to the vixens/fever game being postponed.
+# The commented block is what would normally be run.
+# round9: data/$(YEAR)/sn-assets-round-9/stan_data.rds \
+# 	data/$(YEAR)/sn-assets-round-9/plot-grid.png \
+# 	data/$(YEAR)/sn-assets-round-9/plot-grid-no-hga.png
+round9: data/$(YEAR)/sn-assets-round-9/plot-grid.png
 data/$(YEAR)/sn-assets-round-9/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 9 comp_id 11391 \
-		home "2 3 1 6" away "4 5 7 8"
+		home "7 5 1 6" away "4 8 3 2"
 data/$(YEAR)/sn-assets-round-9/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-9/stan_data.rds
 	cd $(<D) \
@@ -347,7 +350,7 @@ Rmd/$(YEAR)/.round9.bk: Rmd/$(YEAR)/round9.Rmd \
 	data/$(YEAR)/sn-assets-round-9/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round9.md ~/github/website/content/post/$(YEAR)-08-31-round9.md \
+	&& mv round9.md ~/github/website/content/post/$(YEAR)-07-06-round9.md \
 	&& touch .round9.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round9/ \
 	&& cd $(ROOT_DIR) \
@@ -365,12 +368,12 @@ Rmd/$(YEAR)/.round9.bk: Rmd/$(YEAR)/round9.Rmd \
 # 	&& Rscript $(<F) year $(YEAR) round 9 mname abilities_model.stan
 
 round10: data/$(YEAR)/sn-assets-round-10/stan_data.rds \
-	data/$(YEAR)/sn-assets-round-10/plot-grid.png \
-	data/$(YEAR)/sn-assets-round-10/plot-grid-no-hga.png
+	data/$(YEAR)/sn-assets-round-10/plot-grid.png
+	# data/$(YEAR)/sn-assets-round-10/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-10/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 10 comp_id 11391 \
-		home "4 5 2 1" away "8 6 7 3"
+		home "4 8 1 3" away "5 7 6 2"
 data/$(YEAR)/sn-assets-round-10/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-10/stan_data.rds
 	cd $(<D) \
@@ -390,7 +393,7 @@ Rmd/$(YEAR)/.round10.bk: Rmd/$(YEAR)/round10.Rmd \
 	data/$(YEAR)/sn-assets-round-10/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round10.md ~/github/website/content/post/$(YEAR)-09-04-round10.md \
+	&& mv round10.md ~/github/website/content/post/$(YEAR)-07-07-round10.md \
 	&& touch .round10.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round10/ \
 	&& cd $(ROOT_DIR) \

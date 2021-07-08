@@ -4,7 +4,7 @@
 ## Title: In-season comparison.
 ## Author: Steve Lane
 ## Synopsis: Takes the predictions from last round, and overlays the results.
-## Time-stamp: <2019-05-07 16:45:26 (slane)>
+## Time-stamp: <2021-07-08 10:41:35 (sprazza)>
 ################################################################################
 ################################################################################
 
@@ -94,7 +94,7 @@ if (round == 2) {
 ## Save mape all, average mape, and round results mape
 saveRDS(mape_all, here::here(paste0("data/", year, "/mape.rds")))
 saveRDS(
-  mean(mape_all[["mape"]]),
+  mean(mape_all[["mape"]], na.rm = TRUE),
   here::here(dirname_current, "/average_mape.rds")
 )
 saveRDS(
