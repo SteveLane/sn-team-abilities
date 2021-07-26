@@ -1,4 +1,4 @@
-# Time-stamp: <2021-07-17 10:06:01 (sprazza)>
+# Time-stamp: <2021-07-25 11:52:23 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -470,7 +470,7 @@ round12: data/$(YEAR)/sn-assets-round-12/stan_data.rds \
 data/$(YEAR)/sn-assets-round-12/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 12 comp_id 11391 \
-		home "8 3 7 1" away "5 4 6 2"
+		home "3 8 2 7" away "5 6 4 1"
 data/$(YEAR)/sn-assets-round-12/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-12/stan_data.rds
 	cd $(<D) \
@@ -490,7 +490,7 @@ Rmd/$(YEAR)/.round12.bk: Rmd/$(YEAR)/round12.Rmd \
 	data/$(YEAR)/sn-assets-round-12/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round12.md ~/github/website/content/post/$(YEAR)-09-11-round12.md \
+	&& mv round12.md ~/github/website/content/post/$(YEAR)-07-25-round12.md \
 	&& touch .round12.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round12/ \
 	&& cd $(ROOT_DIR) \
@@ -524,7 +524,7 @@ round13: data/$(YEAR)/sn-assets-round-13/stan_data.rds \
 data/$(YEAR)/sn-assets-round-13/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 13 comp_id 11391 \
-		home "3 8 1 4" away "7 2 5 6"
+		home "6 1 7 8" away "3 4 2 3"
 data/$(YEAR)/sn-assets-round-13/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-13/stan_data.rds
 	cd $(<D) \
@@ -544,7 +544,7 @@ Rmd/$(YEAR)/.round13.bk: Rmd/$(YEAR)/round13.Rmd \
 	data/$(YEAR)/sn-assets-round-13/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round13.md ~/github/website/content/post/$(YEAR)-09-15-round13.md \
+	&& mv round13.md ~/github/website/content/post/$(YEAR)-07-28-round13.md \
 	&& touch .round13.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round13/ \
 	&& cd $(ROOT_DIR) \
@@ -567,7 +567,7 @@ round14: data/$(YEAR)/sn-assets-round-14/stan_data.rds \
 data/$(YEAR)/sn-assets-round-14/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 14 comp_id 11391 \
-		home "3 5 8 7" away "6 2 1 4"
+		home "5 4 5 8" away "1 6 7 2"
 data/$(YEAR)/sn-assets-round-14/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-14/stan_data.rds
 	cd $(<D) \
@@ -587,7 +587,7 @@ Rmd/$(YEAR)/.round14.bk: Rmd/$(YEAR)/round14.Rmd \
 	data/$(YEAR)/sn-assets-round-14/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round14.md ~/github/website/content/post/$(YEAR)-09-24-round14.md \
+	&& mv round14.md ~/github/website/content/post/$(YEAR)-08-03-round14.md \
 	&& touch .round14.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round14/ \
 	&& cd $(ROOT_DIR) \
