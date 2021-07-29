@@ -6,7 +6,7 @@ tags: ["r", "sports analytics"]
 categories: ["blog", "Super Netball"]
 ---
 
-<!-- Time-stamp: <2021-07-29 18:33:33 (sprazza)> -->
+<!-- Time-stamp: <2021-07-29 20:13:40 (sprazza)> -->
 
 ```{r setup,echo=FALSE,warning=FALSE,message=FALSE,cache=FALSE,results="hide"}
 knitr::opts_chunk$set(cache = FALSE, error = FALSE, warning = FALSE,
@@ -52,11 +52,11 @@ The following figure shows the results (score difference of the home team) in [r
 
 !["prediction-comparison"](/sn-assets/2021/round13/plot-grid-comparison.png)
 
-The mean average prediction error for the model over the rounds to date is `r ave_mape`. The results are shown below, with the MAPE for each game.
+<!-- The mean average prediction error for the model over the rounds to date is `r ave_mape`. The results are shown below, with the MAPE for each game. -->
 
-```{r results-table}
-results_table <- readRDS(here("data/2021/sn-assets-round-13",
-  "results_mape.rds"))
-knitr::kable(results_table)
+<!-- ```{r results-table} -->
+<!-- results_table <- readRDS(here("data/2021/sn-assets-round-13", -->
+<!--   "results_mape.rds")) -->
+<!-- knitr::kable(results_table) -->
 
-```
+<!-- ``` -->
