@@ -5,7 +5,7 @@
 // Date: Sunday, 22 April 2018
 // Synopsis: Fits a basic difference of abilities model to super netball scores.
 // Uses the basic model as a base, and priors derived from season 2017.
-// Time-stamp: <2018-04-25 19:19:02 (slane)>
+// Time-stamp: <2022-04-03 14:48:07 (sprazza)>
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -26,16 +26,6 @@ data {
   real score_diff[ngames];
   /* Flag for first round */
   int<lower=0,upper=1> first_round;
-  /* Ability at start of the season */
-  row_vector[nteams] init_ability;
-  /* Standard deviation of start of season ability */
-  matrix<lower=0>[nteams, 2] init_sd;
-  /* Initial HGA */
-  vector[nteams] mu_hga;
-  /* Standard deviation of HGA (Gamma prior) */
-  real<lower=0> init_sigma_hga[2];
-  /* Standard deviation of score differences (Gamma prior) */
-  real<lower=0> init_sigma_y[2];
   /* Predictions for next round */
   /* Number of games to predict */
   int<lower=0> ngames_pred;
@@ -68,9 +58,9 @@ transformed parameters {
   /* Home ground advantage */
   vector[nteams] hga;
   /* Abilities at start of season */
-  a[1] = init_ability + sigma_eta .* a_init;
+  a[1] = sigma_eta .* a_init;
   /* Home ground advantage */
-  hga = mu_hga + sigma_hga * hga_raw;
+  hga = sigma_hga * hga_raw;
   /* Round by round team ability evolution */
   if (nrounds >= 2) {
     for (r in 2:nrounds) {
@@ -89,14 +79,15 @@ model{
   /* Priors for team trends */
   to_vector(eta_raw) ~ normal(0, 1);
   for (i in 1:nteams) {
-    sigma_eta[i] ~ gamma(init_sd[1], init_sd[2]);
+    // Assume a Gamma(2, 2) for the standard deviation of team effect
+    sigma_eta[i] ~ gamma(2, 2);
   }
-  /* Prior for home ground advantage */
-  hga_raw ~ normal(0, 1);
-  sigma_hga ~ gamma(init_sigma_hga[1], init_sigma_hga[2]);
+  /* Prior for home ground advantage - 2 goal HA assumed */
+  hga_raw ~ normal(2, 1);
+  sigma_hga ~ gamma(2, 2);
   // Likelihood
   /* Prior for standard deviation */
-  sigma_y ~ gamma(init_sigma_y[1], init_sigma_y[2]);
+  sigma_y ~ gamma(2, 2);
   /* Only run if not first round */
   if (first_round == 0) {
     score_diff ~ normal(mean_score_diff, sigma_y);
