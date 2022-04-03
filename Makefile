@@ -1,4 +1,4 @@
-# Time-stamp: <2021-07-25 11:52:23 (sprazza)>
+# Time-stamp: <2022-04-03 14:14:46 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -64,14 +64,6 @@ Rmd/$(YEAR)/.round2.bk: Rmd/$(YEAR)/round2.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round2/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-2/*.png ~/github/website/static/sn-assets/$(YEAR)/round2/
-# # Wrap up Round 1
-# round1-wrapup: Rmd/$(YEAR)/.round1-wrapup.bk
-# Rmd/$(YEAR)/.round1-wrapup.bk: Rmd/$(YEAR)/round1-wrapup.Rmd \
-# 	data/$(YEAR)/sn-assets-round-2/plot-grid.png
-# 	cd $(<D) \
-# 	&& Rscript -e "knitr::knit('$(<F)')" \
-# 	&& touch .round1-wrapup.bk \
-# 	&& mv round1-wrapup.md ~/github/website/content/post/$(YEAR)-05-03-round1-wrapup.md
 
 # round 3
 round3: data/$(YEAR)/sn-assets-round-3/stan_data.rds \
@@ -105,14 +97,6 @@ Rmd/$(YEAR)/.round3.bk: Rmd/$(YEAR)/round3.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round3/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-3/*.png ~/github/website/static/sn-assets/$(YEAR)/round3/
-# Wrap up round 2
-# round2-wrapup: Rmd/$(YEAR)/.round2-wrapup.bk
-# Rmd/$(YEAR)/.round2-wrapup.bk: Rmd/$(YEAR)/round2-wrapup.Rmd \
-# 	data/$(YEAR)/sn-assets-round-3/plot-grid.png
-# 	cd $(<D) \
-# 	&& Rscript -e "knitr::knit('$(<F)')" \
-# 	&& touch .round2-wrapup.bk \
-# 	&& mv round2-wrapup.md ~/github/website/content/post/$(YEAR)-05-06-round2-wrapup.md
 
 # round 4
 round4: data/$(YEAR)/sn-assets-round-4/stan_data.rds \
@@ -179,16 +163,6 @@ Rmd/$(YEAR)/.round5.bk: Rmd/$(YEAR)/round5.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round5/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-5/*.png ~/github/website/static/sn-assets/$(YEAR)/round5/
-# round5: data/$(YEAR)/sn-assets-round-5/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-5/plot-grid.png
-# data/$(YEAR)/sn-assets-round-5/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 5 comp_id 11391 \
-# 		home "3 7 4 1" away "8 2 5 6"
-# data/$(YEAR)/sn-assets-round-5/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-5/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 5 mname abilities_model.stan
 
 # round 6
 round6: data/$(YEAR)/sn-assets-round-6/stan_data.rds \
@@ -223,18 +197,6 @@ Rmd/$(YEAR)/.round6.bk: Rmd/$(YEAR)/round6.Rmd \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-6/*.png ~/github/website/static/sn-assets/$(YEAR)/round6/
 
-# # round 6 (needs editing, I've just got data at the moment)
-# round6: data/$(YEAR)/sn-assets-round-6/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-6/plot-grid.png
-# data/$(YEAR)/sn-assets-round-6/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 6 comp_id 11391 \
-# 		home "7 6 5 2" away "4 8 3 1"
-# data/$(YEAR)/sn-assets-round-6/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-6/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 6 mname abilities_model.stan
-
 round7: data/$(YEAR)/sn-assets-round-7/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-7/plot-grid.png
 	# data/$(YEAR)/sn-assets-round-7/plot-grid-no-hga.png
@@ -266,17 +228,6 @@ Rmd/$(YEAR)/.round7.bk: Rmd/$(YEAR)/round7.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round7/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-7/*.png ~/github/website/static/sn-assets/$(YEAR)/round7/
-# # round 7 (needs editing, I've just got data at the moment)
-# round7: data/$(YEAR)/sn-assets-round-7/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-7/plot-grid.png
-# data/$(YEAR)/sn-assets-round-7/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 7 comp_id 11391 \
-# 		home "1 8 6 4" away "7 2 5 3"
-# data/$(YEAR)/sn-assets-round-7/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-7/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 7 mname abilities_model.stan
 
 round8: data/$(YEAR)/sn-assets-round-8/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-8/plot-grid.png
@@ -309,17 +260,6 @@ Rmd/$(YEAR)/.round8.bk: Rmd/$(YEAR)/round8.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round8/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-8/*.png ~/github/website/static/sn-assets/$(YEAR)/round8/
-# # round 8 (needs editing, I've just got data at the moment)
-# round8: data/$(YEAR)/sn-assets-round-8/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-8/plot-grid.png
-# data/$(YEAR)/sn-assets-round-8/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 8 comp_id 11391 \
-# 		home "7 8 6 5" away "3 1 4 2"
-# data/$(YEAR)/sn-assets-round-8/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-8/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 8 mname abilities_model.stan
 
 # Round 9 in 2021 is run manually due to the vixens/fever game being postponed.
 # The commented block is what would normally be run.
@@ -355,17 +295,6 @@ Rmd/$(YEAR)/.round9.bk: Rmd/$(YEAR)/round9.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round9/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-9/*.png ~/github/website/static/sn-assets/$(YEAR)/round9/
-# # round 9 (needs editing, I've just got data at the moment)
-# round9: data/$(YEAR)/sn-assets-round-9/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-9/plot-grid.png
-# data/$(YEAR)/sn-assets-round-9/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 9 comp_id 11391 \
-# 		home "7 2 1 3" away "8 4 5 6"
-# data/$(YEAR)/sn-assets-round-9/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-9/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 9 mname abilities_model.stan
 
 round10: data/$(YEAR)/sn-assets-round-10/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-10/plot-grid.png \
@@ -398,28 +327,6 @@ Rmd/$(YEAR)/.round10.bk: Rmd/$(YEAR)/round10.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round10/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-10/*.png ~/github/website/static/sn-assets/$(YEAR)/round10/
-# # round 10
-# round10: data/$(YEAR)/sn-assets-round-10/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-10/plot-grid.png
-# data/$(YEAR)/sn-assets-round-10/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 10 comp_id 11391 \
-# 		home "6 8 3 4" away "7 5 2 1"
-# data/$(YEAR)/sn-assets-round-10/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-10/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 10 mname abilities_model.stan
-# # Make blog for round 10
-# round10-blog: Rmd/$(YEAR)/.round10.bk
-# Rmd/$(YEAR)/.round10.bk: Rmd/$(YEAR)/round10.Rmd \
-# 	data/$(YEAR)/sn-assets-round-10/plot-grid.png
-# 	cd $(<D) \
-# 	&& Rscript -e "knitr::knit('$(<F)')" \
-# 	&& mv round10.md ~/github/website/content/post/$(YEAR)-07-26-round10.md \
-# 	&& touch .round10.bk \
-#   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round10/ \
-# 	&& cd $(ROOT_DIR) \
-# 	&& cp data/$(YEAR)/sn-assets-round-10/*.png ~/github/website/static/sn-assets/$(YEAR)/round10/
 
 round11: data/$(YEAR)/sn-assets-round-11/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-11/plot-grid.png \
@@ -452,17 +359,6 @@ Rmd/$(YEAR)/.round11.bk: Rmd/$(YEAR)/round11.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round11/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-11/*.png ~/github/website/static/sn-assets/$(YEAR)/round11/
-# # round 11 (needs editing, I've just got data at the moment)
-# round11: data/$(YEAR)/sn-assets-round-11/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-11/plot-grid.png
-# data/$(YEAR)/sn-assets-round-11/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 11 comp_id 11391 \
-# 		home "4 7 2 1" away "8 5 6 3"
-# data/$(YEAR)/sn-assets-round-11/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-11/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 11 mname abilities_model.stan
 
 round12: data/$(YEAR)/sn-assets-round-12/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-12/plot-grid.png \
@@ -495,28 +391,6 @@ Rmd/$(YEAR)/.round12.bk: Rmd/$(YEAR)/round12.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round12/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-12/*.png ~/github/website/static/sn-assets/$(YEAR)/round12/
-# # round 12
-# round12: data/$(YEAR)/sn-assets-round-12/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-12/plot-grid.png
-# data/$(YEAR)/sn-assets-round-12/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 12 comp_id 11391 \
-# 		home "2 5 6 8" away "7 4 1 3"
-# data/$(YEAR)/sn-assets-round-12/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-12/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 12 mname abilities_model.stan
-# # Make blog for round 12
-# round12-blog: Rmd/$(YEAR)/.round12.bk
-# Rmd/$(YEAR)/.round12.bk: Rmd/$(YEAR)/round12.Rmd \
-# 	data/$(YEAR)/sn-assets-round-12/plot-grid.png
-# 	cd $(<D) \
-# 	&& Rscript -e "knitr::knit('$(<F)')" \
-# 	&& mv round12.md ~/github/website/content/post/$(YEAR)-08-08-round12.md \
-# 	&& touch .round12.bk \
-#   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round12/ \
-# 	&& cd $(ROOT_DIR) \
-# 	&& cp data/$(YEAR)/sn-assets-round-12/*.png ~/github/website/static/sn-assets/$(YEAR)/round12/
 
 round13: data/$(YEAR)/sn-assets-round-13/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-13/plot-grid.png \
@@ -549,17 +423,6 @@ Rmd/$(YEAR)/.round13.bk: Rmd/$(YEAR)/round13.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round13/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-13/*.png ~/github/website/static/sn-assets/$(YEAR)/round13/
-# # round 13 (needs editing, I've just got data at the moment)
-# round13: data/$(YEAR)/sn-assets-round-13/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-13/plot-grid.png
-# data/$(YEAR)/sn-assets-round-13/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 13 comp_id 11391 \
-# 		home "3 1 4 8" away "5 2 7 6"
-# data/$(YEAR)/sn-assets-round-13/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-13/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 13 mname abilities_model.stan
 
 round14: data/$(YEAR)/sn-assets-round-14/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-14/plot-grid.png \
@@ -592,15 +455,3 @@ Rmd/$(YEAR)/.round14.bk: Rmd/$(YEAR)/round14.Rmd \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round14/ \
 	&& cd $(ROOT_DIR) \
 	&& cp data/$(YEAR)/sn-assets-round-14/*.png ~/github/website/static/sn-assets/$(YEAR)/round14/
-# # round 14 (needs editing, I've just got data at the moment)
-# round14: data/$(YEAR)/sn-assets-round-14/stan_data.rds \
-# 	data/$(YEAR)/sn-assets-round-14/plot-grid.png
-# data/$(YEAR)/sn-assets-round-14/stan_data.rds: R/in-season-data-prep.R
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 14 comp_id 11391 \
-# 		home "2 5 7 3" away "8 6 1 4"
-# data/$(YEAR)/sn-assets-round-14/plot-grid.png: \
-# 	R/in-season-model.R data/$(YEAR)/sn-assets-round-14/stan_data.rds
-# 	cd $(<D) \
-# 	&& Rscript $(<F) year $(YEAR) round 14 mname abilities_model.stan
-# ATTENTION: after 'round 15' running (which brings in round 14 data), the data needs to be saved so it can be used for pre-season ability setting for next years games.
