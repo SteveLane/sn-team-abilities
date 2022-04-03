@@ -1,6 +1,8 @@
-# Time-stamp: <2022-04-03 14:49:15 (sprazza)>
+# Time-stamp: <2022-04-03 15:23:34 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+YEAR:=2022
+PAST_YEAR:=$(shell expr $(YEAR) \- 1)
 
 # Make models for blogging.
 # Round 1
@@ -9,7 +11,7 @@ round1: data/$(YEAR)/sn-assets-round-1/stan_data.rds \
 data/$(YEAR)/sn-assets-round-1/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 1 comp_id 11665 \
-		home "4 3 6 1" away "8 7 5 2"
+		home "1 5 6 8" away "3 2 4 7"
 data/$(YEAR)/sn-assets-round-1/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-1/stan_data.rds
 	cd $(<D) \
@@ -20,7 +22,7 @@ Rmd/$(YEAR)/.round1.bk: Rmd/$(YEAR)/round1.Rmd \
 	data/$(YEAR)/sn-assets-round-1/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round1.md ~/github/website/content/post/$(YEAR)-05-01-round1.md \
+	&& mv round1.md ~/github/website/content/post/$(YEAR)-03-24-round1.md \
 	&& touch .round1.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round1/ \
 	&& cd $(ROOT_DIR) \
@@ -32,7 +34,7 @@ round2: data/$(YEAR)/sn-assets-round-2/stan_data.rds \
 data/$(YEAR)/sn-assets-round-2/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 2 comp_id 11665 \
-		home "2 8 4 6" away "3 5 7 1"
+		home "5 7 3 1" away "4 6 8 2"
 data/$(YEAR)/sn-assets-round-2/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-2/stan_data.rds
 	cd $(<D) \
@@ -48,7 +50,7 @@ Rmd/$(YEAR)/.round2.bk: Rmd/$(YEAR)/round2.Rmd \
 	data/$(YEAR)/sn-assets-round-2/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round2.md ~/github/website/content/post/$(YEAR)-05-03-round2.md \
+	&& mv round2.md ~/github/website/content/post/$(YEAR)-03-31-round2.md \
 	&& touch .round2.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round2/ \
 	&& cd $(ROOT_DIR) \

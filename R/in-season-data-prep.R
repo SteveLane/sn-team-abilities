@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Produces data for modelling in-season matches.
-## Time-stamp: <2019-05-04 14:10:07 (slane)>
+## Time-stamp: <2022-04-03 14:55:59 (sprazza)>
 ################################################################################
 ################################################################################
 
@@ -54,14 +54,6 @@ if (round == 1) {
   ladder <- ladders(data, prev_round)
   results <- matchPredictions(prev_round, year, match_results)
 }
-
-################################################################################
-## Load priors for the model, and the model statement.
-init_abilities <- readRDS(here("data", paste0(year, "/shrunken_abilities.rds")))
-abilities_sd <- readRDS(here("data", paste0(year, "/initial_abilities_sd.rds")))
-hga_post <- readRDS(here("data", paste0(year, "/initial_hga.rds")))
-hga_sd <- readRDS(here("data", paste0(year, "/initial_hga_sd.rds")))
-sigma_y <- readRDS(here("data", paste0(year, "/initial_sigma_y.rds")))
 
 ################################################################################
 ## Transform data into appropriate format for the Stan model.
@@ -115,11 +107,6 @@ stan_data <- list(
   home = model_data$homeInt,
   away = model_data$awayInt,
   score_diff = model_data$score_diff,
-  init_ability = init_abilities,
-  init_sd = cbind(abilities_sd[["shape"]], abilities_sd[["rate"]]),
-  mu_hga = hga_post$value,
-  init_sigma_hga = as.numeric(hga_sd),
-  init_sigma_y = as.numeric(sigma_y),
   ngames_pred = length(home),
   pred_home = round_data$homeSquad,
   pred_away = round_data$awaySquad,

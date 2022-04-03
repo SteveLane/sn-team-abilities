@@ -5,7 +5,7 @@
 // Date: Sunday, 22 April 2018
 // Synopsis: Fits a basic difference of abilities model to super netball scores.
 // Uses the basic model as a base, and priors derived from season 2017.
-// Time-stamp: <2022-04-03 14:48:07 (sprazza)>
+// Time-stamp: <2022-04-03 15:20:44 (sprazza)>
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -82,8 +82,8 @@ model{
     // Assume a Gamma(2, 2) for the standard deviation of team effect
     sigma_eta[i] ~ gamma(2, 2);
   }
-  /* Prior for home ground advantage - 2 goal HA assumed */
-  hga_raw ~ normal(2, 1);
+  /* Prior for home ground advantage */
+  hga_raw ~ normal(0, 1);
   sigma_hga ~ gamma(2, 2);
   // Likelihood
   /* Prior for standard deviation */
