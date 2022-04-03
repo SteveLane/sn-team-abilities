@@ -1,17 +1,6 @@
-# Time-stamp: <2022-04-03 14:17:25 (sprazza)>
+# Time-stamp: <2022-04-03 14:49:15 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-
-# Generate the shrunken priors from last season.
-# Utilise data from the end of the home and away matches.
-.PHONY: shrinking
-YEAR:=2022
-PAST_YEAR:=$(shell expr $(YEAR) \- 1)
-shrinking: data/$(YEAR)/shrunken_abilities.rds
-data/$(YEAR)/shrunken_abilities.rds: R/post-finals-model.R \
-		data-raw/season_$(PAST_YEAR).rds
-	cd $(<D) \
-	&& Rscript $(<F) year $(PAST_YEAR) round 14 comp_id 11391
 
 # Make models for blogging.
 # Round 1
