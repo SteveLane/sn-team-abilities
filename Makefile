@@ -1,17 +1,17 @@
-# Time-stamp: <2022-04-03 14:14:46 (sprazza)>
+# Time-stamp: <2022-04-03 14:17:25 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # Generate the shrunken priors from last season.
 # Utilise data from the end of the home and away matches.
 .PHONY: shrinking
-YEAR:=2021
+YEAR:=2022
 PAST_YEAR:=$(shell expr $(YEAR) \- 1)
 shrinking: data/$(YEAR)/shrunken_abilities.rds
 data/$(YEAR)/shrunken_abilities.rds: R/post-finals-model.R \
 		data-raw/season_$(PAST_YEAR).rds
 	cd $(<D) \
-	&& Rscript $(<F) year $(PAST_YEAR) round 14 comp_id 11108
+	&& Rscript $(<F) year $(PAST_YEAR) round 14 comp_id 11391
 
 # Make models for blogging.
 # Round 1
@@ -19,7 +19,7 @@ round1: data/$(YEAR)/sn-assets-round-1/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-1/plot-grid.png
 data/$(YEAR)/sn-assets-round-1/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 1 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 1 comp_id 11665 \
 		home "4 3 6 1" away "8 7 5 2"
 data/$(YEAR)/sn-assets-round-1/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-1/stan_data.rds
@@ -42,7 +42,7 @@ round2: data/$(YEAR)/sn-assets-round-2/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-2/plot-grid.png
 data/$(YEAR)/sn-assets-round-2/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 2 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 2 comp_id 11665 \
 		home "2 8 4 6" away "3 5 7 1"
 data/$(YEAR)/sn-assets-round-2/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-2/stan_data.rds
@@ -71,7 +71,7 @@ round3: data/$(YEAR)/sn-assets-round-3/stan_data.rds \
 	# data/$(YEAR)/sn-assets-round-3/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-3/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 3 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 3 comp_id 11665 \
 		home "3 7 5 2" away "1 8 4 6"
 data/$(YEAR)/sn-assets-round-3/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-3/stan_data.rds
@@ -104,7 +104,7 @@ round4: data/$(YEAR)/sn-assets-round-4/stan_data.rds \
 	# data/$(YEAR)/sn-assets-round-4/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-4/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 4 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 4 comp_id 11665 \
 		home "3 1 7 4" away "6 8 5 2"
 data/$(YEAR)/sn-assets-round-4/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-4/stan_data.rds
@@ -137,7 +137,7 @@ round5: data/$(YEAR)/sn-assets-round-5/stan_data.rds \
 	# data/$(YEAR)/sn-assets-round-5/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-5/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 5 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 5 comp_id 11665 \
 		home "6 1 5 8" away "4 7 3 2"
 data/$(YEAR)/sn-assets-round-5/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-5/stan_data.rds
@@ -170,7 +170,7 @@ round6: data/$(YEAR)/sn-assets-round-6/stan_data.rds \
 	# data/$(YEAR)/sn-assets-round-6/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-6/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 6 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 6 comp_id 11665 \
 		home "3 2 7 4" away "8 5 6 1"
 data/$(YEAR)/sn-assets-round-6/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-6/stan_data.rds
@@ -202,7 +202,7 @@ round7: data/$(YEAR)/sn-assets-round-7/stan_data.rds \
 	# data/$(YEAR)/sn-assets-round-7/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-7/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 7 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 7 comp_id 11665 \
 		home "2 3 1 6" away "7 4 5 8"
 data/$(YEAR)/sn-assets-round-7/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-7/stan_data.rds
@@ -234,7 +234,7 @@ round8: data/$(YEAR)/sn-assets-round-8/stan_data.rds \
 	# data/$(YEAR)/sn-assets-round-8/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-8/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 8 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 8 comp_id 11665 \
 		home "5 2 7 8" away "6 1 3 4"
 data/$(YEAR)/sn-assets-round-8/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-8/stan_data.rds
@@ -269,7 +269,7 @@ Rmd/$(YEAR)/.round8.bk: Rmd/$(YEAR)/round8.Rmd \
 round9: data/$(YEAR)/sn-assets-round-9/plot-grid.png
 data/$(YEAR)/sn-assets-round-9/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 9 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 9 comp_id 11665 \
 		home "7 5 1 6" away "4 8 3 2"
 data/$(YEAR)/sn-assets-round-9/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-9/stan_data.rds
@@ -301,7 +301,7 @@ round10: data/$(YEAR)/sn-assets-round-10/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-10/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-10/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 10 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 10 comp_id 11665 \
 		home "4 8 1 3" away "5 7 6 2"
 data/$(YEAR)/sn-assets-round-10/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-10/stan_data.rds
@@ -333,7 +333,7 @@ round11: data/$(YEAR)/sn-assets-round-11/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-11/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-11/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 11 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 11 comp_id 11665 \
 		home "4 5 8 6" away "3 2 1 7"
 data/$(YEAR)/sn-assets-round-11/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-11/stan_data.rds
@@ -365,7 +365,7 @@ round12: data/$(YEAR)/sn-assets-round-12/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-12/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-12/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 12 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 12 comp_id 11665 \
 		home "3 8 2 7" away "5 6 4 1"
 data/$(YEAR)/sn-assets-round-12/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-12/stan_data.rds
@@ -397,7 +397,7 @@ round13: data/$(YEAR)/sn-assets-round-13/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-13/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-13/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 13 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 13 comp_id 11665 \
 		home "6 1 7 8" away "3 4 2 3"
 data/$(YEAR)/sn-assets-round-13/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-13/stan_data.rds
@@ -429,7 +429,7 @@ round14: data/$(YEAR)/sn-assets-round-14/stan_data.rds \
 	data/$(YEAR)/sn-assets-round-14/plot-grid-no-hga.png
 data/$(YEAR)/sn-assets-round-14/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
-	&& Rscript $(<F) year $(YEAR) round 14 comp_id 11391 \
+	&& Rscript $(<F) year $(YEAR) round 14 comp_id 11665 \
 		home "5 4 5 8" away "1 6 7 2"
 data/$(YEAR)/sn-assets-round-14/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-14/stan_data.rds
