@@ -5,7 +5,7 @@
 ## Author: Steve Lane
 ## Date: Tuesday, 23 April 2019
 ## Synopsis: Fits the model to in-season matches.
-## Time-stamp: <2019-05-07 16:45:26 (slane)>
+## Time-stamp: <2022-04-06 19:25:15 (sprazza)>
 ################################################################################
 ################################################################################
 
@@ -55,7 +55,7 @@ model <- stan_model(here("stan", opt$mname))
 output <- sampling(
   model,
   data = stan_data,
-  iter = 4000,
+  iter = 6000,
   chains = 6,
   thin = 5,
   open_progress = FALSE,
