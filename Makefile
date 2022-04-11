@@ -1,4 +1,4 @@
-# Time-stamp: <2022-04-11 19:02:00 (sprazza)>
+# Time-stamp: <2022-04-11 19:10:52 (sprazza)>
 # Set the directory of the Makefile.
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 YEAR:=2022
@@ -129,7 +129,7 @@ round5: data/$(YEAR)/sn-assets-round-5/stan_data.rds \
 data/$(YEAR)/sn-assets-round-5/stan_data.rds: R/in-season-data-prep.R
 	cd $(<D) \
 	&& Rscript $(<F) year $(YEAR) round 5 comp_id 11665 \
-		home "6 1 5 8" away "4 7 3 2"
+		home "7 2 8 6" away "4 3 5 1"
 data/$(YEAR)/sn-assets-round-5/plot-grid.png: \
 	R/in-season-model.R data/$(YEAR)/sn-assets-round-5/stan_data.rds
 	cd $(<D) \
@@ -149,7 +149,7 @@ Rmd/$(YEAR)/.round5.bk: Rmd/$(YEAR)/round5.Rmd \
 	data/$(YEAR)/sn-assets-round-5/plot-grid.png
 	cd $(<D) \
 	&& Rscript -e "knitr::knit('$(<F)')" \
-	&& mv round5.md ~/github/website/content/post/$(YEAR)-06-03-round5.md \
+	&& mv round5.md ~/github/website/content/post/$(YEAR)-04-14-round5.md \
 	&& touch .round5.bk \
   && mkdir -p ~/github/website/static/sn-assets/$(YEAR)/round5/ \
 	&& cd $(ROOT_DIR) \
